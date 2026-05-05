@@ -1,0 +1,97 @@
+{
+  "claim_refs": [
+    {
+      "claim_id": "claim_0001",
+      "claim_type": "risk_signal",
+      "confidence": 0.78,
+      "source_refs": [
+        "evidence:public_privacy_concerns_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "source_observed",
+      "text": "Users may perceive persistent memory as surveillance-like if it is enabled by default.",
+      "used_in": [
+        "simulation_metrics.trust_damage",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0002",
+      "claim_type": "tradeoff",
+      "confidence": 0.71,
+      "source_refs": [
+        "evidence:launch_memo",
+        "graph:launch_risk"
+      ],
+      "status": "graph_inferred",
+      "text": "Opt-in launch reduces consent friction while slowing early adoption.",
+      "used_in": [
+        "simulation_metrics.adoption_friction",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0003",
+      "claim_type": "stakeholder_signal",
+      "confidence": 0.68,
+      "source_refs": [
+        "run:privacy_backlash_seed_2"
+      ],
+      "status": "simulation_observed",
+      "text": "Journalists and privacy advocates are high-leverage amplifiers in the backlash scenario.",
+      "used_in": [
+        "simulation_metrics.narrative_cascade_risk",
+        "verdict.strongest_dissent"
+      ]
+    },
+    {
+      "claim_id": "claim_0006",
+      "claim_type": "risk_signal",
+      "confidence": 0.66,
+      "source_refs": [
+        "run:competitor_attack_seed_1"
+      ],
+      "status": "simulation_observed",
+      "text": "Competitors could frame default-on memory as careless handling of sensitive personal context.",
+      "used_in": [
+        "simulation_metrics.competitor_exploitability"
+      ]
+    }
+  ],
+  "ensemble": {
+    "evidence_confidence": 0.66,
+    "runs": 36,
+    "scenario_dispersion": 0.24
+  },
+  "formula_version": "launch_risk.metrics.v1",
+  "metric_authority": "deterministic_formulas_over_structured_signals",
+  "options": {
+    "default_on": {
+      "adoption_friction": 0.31,
+      "backlash_intensity": 0.82,
+      "competitor_exploitability": 0.73,
+      "narrative_cascade_risk": 0.79,
+      "overall_risk_score": 0.72,
+      "regulator_attention": 0.61,
+      "trust_damage": 0.74
+    },
+    "enterprise_only": {
+      "adoption_friction": 0.67,
+      "backlash_intensity": 0.28,
+      "competitor_exploitability": 0.38,
+      "narrative_cascade_risk": 0.25,
+      "overall_risk_score": 0.47,
+      "regulator_attention": 0.34,
+      "trust_damage": 0.24
+    },
+    "opt_in_beta": {
+      "adoption_friction": 0.48,
+      "backlash_intensity": 0.45,
+      "competitor_exploitability": 0.41,
+      "narrative_cascade_risk": 0.39,
+      "overall_risk_score": 0.43,
+      "regulator_attention": 0.28,
+      "trust_damage": 0.34
+    }
+  }
+}

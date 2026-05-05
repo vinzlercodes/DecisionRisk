@@ -1,0 +1,77 @@
+{
+  "base_mirofish_project_id": "mf_proj_ai_memory_base_replay",
+  "case_id": "ai_memory_launch",
+  "claim_refs": [
+    {
+      "claim_id": "claim_0001",
+      "claim_type": "risk_signal",
+      "confidence": 0.78,
+      "source_refs": [
+        "evidence:public_privacy_concerns_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "source_observed",
+      "text": "Users may perceive persistent memory as surveillance-like if it is enabled by default.",
+      "used_in": [
+        "simulation_metrics.trust_damage",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0002",
+      "claim_type": "tradeoff",
+      "confidence": 0.71,
+      "source_refs": [
+        "evidence:launch_memo",
+        "graph:launch_risk"
+      ],
+      "status": "graph_inferred",
+      "text": "Opt-in launch reduces consent friction while slowing early adoption.",
+      "used_in": [
+        "simulation_metrics.adoption_friction",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0005",
+      "claim_type": "tradeoff",
+      "confidence": 0.63,
+      "source_refs": [
+        "council:growth_strategist",
+        "council:trust_reputation_analyst"
+      ],
+      "status": "council_judgment",
+      "text": "Enterprise-only launch may reduce public backlash but delays consumer learning.",
+      "used_in": [
+        "simulation_metrics.overall_risk_score",
+        "verdict.option_comparison"
+      ]
+    }
+  ],
+  "decision_question": "Should AcmeAI launch long-term assistant memory as default-on, opt-in beta, or enterprise-only?",
+  "options": [
+    {
+      "label": "Default-on public launch",
+      "option_id": "default_on"
+    },
+    {
+      "label": "Opt-in beta",
+      "option_id": "opt_in_beta"
+    },
+    {
+      "label": "Enterprise-only launch",
+      "option_id": "enterprise_only"
+    }
+  ],
+  "risk_pack": "launch_risk",
+  "risk_tolerance": "low-medium",
+  "success_metrics": [
+    "adoption",
+    "trust",
+    "retention",
+    "press_sentiment",
+    "regulatory_attention"
+  ],
+  "time_horizon": "30 days",
+  "title": "AcmeAI Memory Launch Risk"
+}

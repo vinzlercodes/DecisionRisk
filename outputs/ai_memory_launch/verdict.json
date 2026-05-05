@@ -1,0 +1,23 @@
+{
+  "confidence": 0.66,
+  "final_verdict": "RECOMMEND",
+  "primary_rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+  "primary_rationale_claim_refs": [
+    "claim_0001",
+    "claim_0002",
+    "claim_0004"
+  ],
+  "recommended_option_id": "opt_in_beta",
+  "required_mitigations": [
+    "Publish memory controls before launch",
+    "Expose deletion and temporary-use controls in onboarding",
+    "Prepare a privacy-focused press FAQ"
+  ],
+  "risk_level": "medium",
+  "strongest_dissent": "Default-on may accelerate adoption if the company can prove controls are clear before launch.",
+  "threshold_verdict": "RECOMMEND",
+  "what_would_change_the_verdict": [
+    "Public evidence that users strongly prefer default-on memory",
+    "Beta telemetry showing low opt-out and low trust damage"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "claim_refs": [
+    {
+      "claim_id": "claim_0002",
+      "claim_type": "tradeoff",
+      "confidence": 0.71,
+      "source_refs": [
+        "evidence:launch_memo",
+        "graph:launch_risk"
+      ],
+      "status": "graph_inferred",
+      "text": "Opt-in launch reduces consent friction while slowing early adoption.",
+      "used_in": [
+        "simulation_metrics.adoption_friction",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0003",
+      "claim_type": "stakeholder_signal",
+      "confidence": 0.68,
+      "source_refs": [
+        "run:privacy_backlash_seed_2"
+      ],
+      "status": "simulation_observed",
+      "text": "Journalists and privacy advocates are high-leverage amplifiers in the backlash scenario.",
+      "used_in": [
+        "simulation_metrics.narrative_cascade_risk",
+        "verdict.strongest_dissent"
+      ]
+    },
+    {
+      "claim_id": "claim_0004",
+      "claim_type": "mitigation",
+      "confidence": 0.74,
+      "source_refs": [
+        "evidence:openai_memory_controls_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "web_verified",
+      "text": "Clear deletion controls and temporary-use mode are plausible mitigations for trust damage.",
+      "used_in": [
+        "verdict.required_mitigations",
+        "risk_docket.mitigation_plan"
+      ]
+    }
+  ],
+  "council": "scenario_design",
+  "metrics": [
+    "backlash_intensity",
+    "adoption_friction",
+    "narrative_cascade_risk",
+    "trust_damage",
+    "regulator_attention",
+    "competitor_exploitability",
+    "overall_risk_score"
+  ],
+  "scenarios": [
+    {
+      "applies_to_options": [
+        "default_on",
+        "opt_in_beta",
+        "enterprise_only"
+      ],
+      "name": "Base case",
+      "scenario_id": "base_case"
+    },
+    {
+      "applies_to_options": [
+        "default_on",
+        "opt_in_beta",
+        "enterprise_only"
+      ],
+      "name": "Privacy backlash cascade",
+      "scenario_id": "privacy_backlash"
+    },
+    {
+      "applies_to_options": [
+        "default_on",
+        "opt_in_beta",
+        "enterprise_only"
+      ],
+      "name": "Competitor attack",
+      "scenario_id": "competitor_attack"
+    },
+    {
+      "applies_to_options": [
+        "default_on",
+        "opt_in_beta",
+        "enterprise_only"
+      ],
+      "name": "Regulator inquiry",
+      "scenario_id": "regulator_inquiry"
+    }
+  ]
+}

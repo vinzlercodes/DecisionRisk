@@ -10,18 +10,18 @@
 
 ## Replay MVP
 
-- [ ] Add portable spec package with CLI.
-- [ ] Add `run_manifest.json` root artifact contract.
-- [ ] Add `ClaimRef` schema enforcement.
-- [ ] Add LaunchRisk risk pack fixture.
-- [ ] Add deterministic replay output generation.
-- [ ] Add replay validation command.
+- [x] Add portable spec package with CLI.
+- [x] Add `run_manifest.json` root artifact contract.
+- [x] Add `ClaimRef` schema enforcement.
+- [x] Add LaunchRisk risk pack fixture.
+- [x] Add deterministic replay output generation.
+- [x] Add replay validation command.
 
 ## Tests
 
-- [ ] Add unit tests for schemas, gates, manifests, and ClaimRefs.
-- [ ] Add replay integration validation for `ai_memory_launch`.
-- [ ] Add negative fixtures for blocked cases.
+- [x] Add unit tests for schemas, gates, manifests, and ClaimRefs.
+- [x] Add replay integration validation for `ai_memory_launch`.
+- [x] Add negative fixtures for blocked cases.
 
 ## MiroFish Integration
 
@@ -32,5 +32,5 @@
 
 ## Review
 
-- Validation results: MiroFish subtree import completed. CLI and tests are not present in this branch yet.
+- Validation results: replay generation, replay validation, and 5 unittest tests pass.
 - Remaining implementation gaps: see `audit.md`.

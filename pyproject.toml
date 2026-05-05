@@ -1,0 +1,9 @@
+[project]
+name = "decisionrisk"
+version = "0.1.0"
+description = "DecisionRisk replay and validation tooling for the MiroFish-first MVP."
+requires-python = ">=3.11"
+license = {text = "AGPL-3.0-or-later"}
+
+[project.scripts]
+decisionrisk = "decisionrisk.cli:main"

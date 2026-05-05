@@ -1,0 +1,107 @@
+{
+  "claim_refs": [
+    {
+      "claim_id": "claim_0001",
+      "claim_type": "risk_signal",
+      "confidence": 0.78,
+      "source_refs": [
+        "evidence:public_privacy_concerns_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "source_observed",
+      "text": "Users may perceive persistent memory as surveillance-like if it is enabled by default.",
+      "used_in": [
+        "simulation_metrics.trust_damage",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0002",
+      "claim_type": "tradeoff",
+      "confidence": 0.71,
+      "source_refs": [
+        "evidence:launch_memo",
+        "graph:launch_risk"
+      ],
+      "status": "graph_inferred",
+      "text": "Opt-in launch reduces consent friction while slowing early adoption.",
+      "used_in": [
+        "simulation_metrics.adoption_friction",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0003",
+      "claim_type": "stakeholder_signal",
+      "confidence": 0.68,
+      "source_refs": [
+        "run:privacy_backlash_seed_2"
+      ],
+      "status": "simulation_observed",
+      "text": "Journalists and privacy advocates are high-leverage amplifiers in the backlash scenario.",
+      "used_in": [
+        "simulation_metrics.narrative_cascade_risk",
+        "verdict.strongest_dissent"
+      ]
+    },
+    {
+      "claim_id": "claim_0004",
+      "claim_type": "mitigation",
+      "confidence": 0.74,
+      "source_refs": [
+        "evidence:openai_memory_controls_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "web_verified",
+      "text": "Clear deletion controls and temporary-use mode are plausible mitigations for trust damage.",
+      "used_in": [
+        "verdict.required_mitigations",
+        "risk_docket.mitigation_plan"
+      ]
+    },
+    {
+      "claim_id": "claim_0005",
+      "claim_type": "tradeoff",
+      "confidence": 0.63,
+      "source_refs": [
+        "council:growth_strategist",
+        "council:trust_reputation_analyst"
+      ],
+      "status": "council_judgment",
+      "text": "Enterprise-only launch may reduce public backlash but delays consumer learning.",
+      "used_in": [
+        "simulation_metrics.overall_risk_score",
+        "verdict.option_comparison"
+      ]
+    },
+    {
+      "claim_id": "claim_0006",
+      "claim_type": "risk_signal",
+      "confidence": 0.66,
+      "source_refs": [
+        "run:competitor_attack_seed_1"
+      ],
+      "status": "simulation_observed",
+      "text": "Competitors could frame default-on memory as careless handling of sensitive personal context.",
+      "used_in": [
+        "simulation_metrics.competitor_exploitability"
+      ]
+    },
+    {
+      "claim_id": "claim_0007",
+      "claim_type": "evidence_gap",
+      "confidence": 0.38,
+      "source_refs": [],
+      "status": "unsupported_assumption",
+      "text": "The exact size of the privacy-sensitive user segment is not known from the fixture evidence.",
+      "used_in": [
+        "grounding_report.unsupported_assumptions"
+      ]
+    }
+  ],
+  "confidence_cap": 0.7,
+  "evidence_items": 5,
+  "grounding_level": "G1",
+  "unsupported_assumptions": 1,
+  "web_grounding": "not_enabled"
+}

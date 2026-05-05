@@ -1,0 +1,74 @@
+{
+  "claim_refs": [
+    {
+      "claim_id": "claim_0001",
+      "claim_type": "risk_signal",
+      "confidence": 0.78,
+      "source_refs": [
+        "evidence:public_privacy_concerns_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "source_observed",
+      "text": "Users may perceive persistent memory as surveillance-like if it is enabled by default.",
+      "used_in": [
+        "simulation_metrics.trust_damage",
+        "verdict.primary_rationale"
+      ]
+    },
+    {
+      "claim_id": "claim_0004",
+      "claim_type": "mitigation",
+      "confidence": 0.74,
+      "source_refs": [
+        "evidence:openai_memory_controls_summary",
+        "evidence:privacy_faq_draft"
+      ],
+      "status": "web_verified",
+      "text": "Clear deletion controls and temporary-use mode are plausible mitigations for trust damage.",
+      "used_in": [
+        "verdict.required_mitigations",
+        "risk_docket.mitigation_plan"
+      ]
+    },
+    {
+      "claim_id": "claim_0007",
+      "claim_type": "evidence_gap",
+      "confidence": 0.38,
+      "source_refs": [],
+      "status": "unsupported_assumption",
+      "text": "The exact size of the privacy-sensitive user segment is not known from the fixture evidence.",
+      "used_in": [
+        "grounding_report.unsupported_assumptions"
+      ]
+    }
+  ],
+  "evidence_items": [
+    {
+      "evidence_id": "launch_memo",
+      "path": "sources/synthetic/launch_memo.md",
+      "source_type": "synthetic_internal"
+    },
+    {
+      "evidence_id": "privacy_faq_draft",
+      "path": "sources/synthetic/privacy_faq_draft.md",
+      "source_type": "synthetic_internal"
+    },
+    {
+      "evidence_id": "customer_interviews",
+      "path": "sources/synthetic/customer_interviews.md",
+      "source_type": "synthetic_internal"
+    },
+    {
+      "evidence_id": "openai_memory_controls_summary",
+      "path": "sources/public/openai_memory_controls_summary.md",
+      "source_type": "public_context_summary"
+    },
+    {
+      "evidence_id": "public_privacy_concerns_summary",
+      "path": "sources/public/public_privacy_concerns_summary.md",
+      "source_type": "public_context_summary"
+    }
+  ],
+  "grounding_level": "G1",
+  "web_grounding_optional": true
+}
