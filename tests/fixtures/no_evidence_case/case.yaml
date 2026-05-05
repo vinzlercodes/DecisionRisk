@@ -1,0 +1,8 @@
+{
+  "case_id": "no_evidence_case",
+  "title": "No Evidence Case",
+  "risk_pack": "launch_risk",
+  "decision_question": "Should we launch this feature?",
+  "options": [{"option_id": "launch", "label": "Launch"}],
+  "evidence_items": []
+}

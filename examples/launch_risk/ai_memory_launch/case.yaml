@@ -1,0 +1,21 @@
+{
+  "case_id": "ai_memory_launch",
+  "title": "AcmeAI Memory Launch Risk",
+  "risk_pack": "launch_risk",
+  "decision_question": "Should AcmeAI launch long-term assistant memory as default-on, opt-in beta, or enterprise-only?",
+  "options": [
+    {"option_id": "default_on", "label": "Default-on public launch"},
+    {"option_id": "opt_in_beta", "label": "Opt-in beta"},
+    {"option_id": "enterprise_only", "label": "Enterprise-only launch"}
+  ],
+  "time_horizon": "30 days",
+  "risk_tolerance": "low-medium",
+  "success_metrics": ["adoption", "trust", "retention", "press_sentiment", "regulatory_attention"],
+  "evidence_items": [
+    "sources/synthetic/launch_memo.md",
+    "sources/synthetic/privacy_faq_draft.md",
+    "sources/synthetic/customer_interviews.md",
+    "sources/public/openai_memory_controls_summary.md",
+    "sources/public/public_privacy_concerns_summary.md"
+  ]
+}

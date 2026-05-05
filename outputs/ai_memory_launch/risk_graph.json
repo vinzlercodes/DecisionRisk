@@ -1,0 +1,58 @@
+{
+  "edges": [
+    {
+      "claim_refs": [
+        "claim_0003"
+      ],
+      "from": "stakeholder_power_users",
+      "to": "narrative_surveillance",
+      "type": "amplifies"
+    },
+    {
+      "claim_refs": [
+        "claim_0004"
+      ],
+      "from": "mitigation_controls",
+      "to": "narrative_surveillance",
+      "type": "mitigates"
+    }
+  ],
+  "entity_types": [
+    "DecisionOption",
+    "CustomerSegment",
+    "Journalist",
+    "Regulator",
+    "Competitor",
+    "Narrative",
+    "Risk",
+    "Mitigation"
+  ],
+  "graph_id": "risk_graph_ai_memory_launch_replay",
+  "nodes": [
+    {
+      "claim_refs": [
+        "claim_0001"
+      ],
+      "id": "stakeholder_power_users",
+      "name": "Privacy-conscious power users",
+      "type": "CustomerSegment"
+    },
+    {
+      "claim_refs": [
+        "claim_0001",
+        "claim_0003"
+      ],
+      "id": "narrative_surveillance",
+      "name": "Default memory as surveillance",
+      "type": "Narrative"
+    },
+    {
+      "claim_refs": [
+        "claim_0004"
+      ],
+      "id": "mitigation_controls",
+      "name": "Explicit controls and deletion UX",
+      "type": "Mitigation"
+    }
+  ]
+}

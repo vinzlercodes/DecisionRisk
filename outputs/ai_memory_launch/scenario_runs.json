@@ -1,0 +1,518 @@
+{
+  "expected_runs": 36,
+  "runs": [
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_base_case_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_base_case_seed_1",
+      "scenario_id": "base_case",
+      "seed": 1,
+      "simulation_id": "mf_sim_default_on_base_case_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_base_case_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_base_case_seed_2",
+      "scenario_id": "base_case",
+      "seed": 2,
+      "simulation_id": "mf_sim_default_on_base_case_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_base_case_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_base_case_seed_3",
+      "scenario_id": "base_case",
+      "seed": 3,
+      "simulation_id": "mf_sim_default_on_base_case_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_default_on_privacy_backlash_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_privacy_backlash_seed_1",
+      "scenario_id": "privacy_backlash",
+      "seed": 1,
+      "simulation_id": "mf_sim_default_on_privacy_backlash_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_default_on_privacy_backlash_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_privacy_backlash_seed_2",
+      "scenario_id": "privacy_backlash",
+      "seed": 2,
+      "simulation_id": "mf_sim_default_on_privacy_backlash_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_default_on_privacy_backlash_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_privacy_backlash_seed_3",
+      "scenario_id": "privacy_backlash",
+      "seed": 3,
+      "simulation_id": "mf_sim_default_on_privacy_backlash_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_competitor_attack_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_competitor_attack_seed_1",
+      "scenario_id": "competitor_attack",
+      "seed": 1,
+      "simulation_id": "mf_sim_default_on_competitor_attack_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_competitor_attack_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_competitor_attack_seed_2",
+      "scenario_id": "competitor_attack",
+      "seed": 2,
+      "simulation_id": "mf_sim_default_on_competitor_attack_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_competitor_attack_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_competitor_attack_seed_3",
+      "scenario_id": "competitor_attack",
+      "seed": 3,
+      "simulation_id": "mf_sim_default_on_competitor_attack_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_regulator_inquiry_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_regulator_inquiry_seed_1",
+      "scenario_id": "regulator_inquiry",
+      "seed": 1,
+      "simulation_id": "mf_sim_default_on_regulator_inquiry_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_regulator_inquiry_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_regulator_inquiry_seed_2",
+      "scenario_id": "regulator_inquiry",
+      "seed": 2,
+      "simulation_id": "mf_sim_default_on_regulator_inquiry_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_default_on_regulator_inquiry_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "default_on",
+      "run_id": "default_on_regulator_inquiry_seed_3",
+      "scenario_id": "regulator_inquiry",
+      "seed": 3,
+      "simulation_id": "mf_sim_default_on_regulator_inquiry_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_base_case_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_base_case_seed_1",
+      "scenario_id": "base_case",
+      "seed": 1,
+      "simulation_id": "mf_sim_opt_in_beta_base_case_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_base_case_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_base_case_seed_2",
+      "scenario_id": "base_case",
+      "seed": 2,
+      "simulation_id": "mf_sim_opt_in_beta_base_case_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_base_case_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_base_case_seed_3",
+      "scenario_id": "base_case",
+      "seed": 3,
+      "simulation_id": "mf_sim_opt_in_beta_base_case_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_privacy_backlash_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_privacy_backlash_seed_1",
+      "scenario_id": "privacy_backlash",
+      "seed": 1,
+      "simulation_id": "mf_sim_opt_in_beta_privacy_backlash_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_privacy_backlash_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_privacy_backlash_seed_2",
+      "scenario_id": "privacy_backlash",
+      "seed": 2,
+      "simulation_id": "mf_sim_opt_in_beta_privacy_backlash_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_privacy_backlash_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_privacy_backlash_seed_3",
+      "scenario_id": "privacy_backlash",
+      "seed": 3,
+      "simulation_id": "mf_sim_opt_in_beta_privacy_backlash_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_competitor_attack_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_competitor_attack_seed_1",
+      "scenario_id": "competitor_attack",
+      "seed": 1,
+      "simulation_id": "mf_sim_opt_in_beta_competitor_attack_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_competitor_attack_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_competitor_attack_seed_2",
+      "scenario_id": "competitor_attack",
+      "seed": 2,
+      "simulation_id": "mf_sim_opt_in_beta_competitor_attack_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_competitor_attack_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_competitor_attack_seed_3",
+      "scenario_id": "competitor_attack",
+      "seed": 3,
+      "simulation_id": "mf_sim_opt_in_beta_competitor_attack_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_regulator_inquiry_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_regulator_inquiry_seed_1",
+      "scenario_id": "regulator_inquiry",
+      "seed": 1,
+      "simulation_id": "mf_sim_opt_in_beta_regulator_inquiry_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_regulator_inquiry_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_regulator_inquiry_seed_2",
+      "scenario_id": "regulator_inquiry",
+      "seed": 2,
+      "simulation_id": "mf_sim_opt_in_beta_regulator_inquiry_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_opt_in_beta_regulator_inquiry_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "opt_in_beta",
+      "run_id": "opt_in_beta_regulator_inquiry_seed_3",
+      "scenario_id": "regulator_inquiry",
+      "seed": 3,
+      "simulation_id": "mf_sim_opt_in_beta_regulator_inquiry_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_base_case_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_base_case_seed_1",
+      "scenario_id": "base_case",
+      "seed": 1,
+      "simulation_id": "mf_sim_enterprise_only_base_case_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_base_case_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_base_case_seed_2",
+      "scenario_id": "base_case",
+      "seed": 2,
+      "simulation_id": "mf_sim_enterprise_only_base_case_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_base_case_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_base_case_seed_3",
+      "scenario_id": "base_case",
+      "seed": 3,
+      "simulation_id": "mf_sim_enterprise_only_base_case_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_privacy_backlash_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_privacy_backlash_seed_1",
+      "scenario_id": "privacy_backlash",
+      "seed": 1,
+      "simulation_id": "mf_sim_enterprise_only_privacy_backlash_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_privacy_backlash_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_privacy_backlash_seed_2",
+      "scenario_id": "privacy_backlash",
+      "seed": 2,
+      "simulation_id": "mf_sim_enterprise_only_privacy_backlash_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_privacy_backlash_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_privacy_backlash_seed_3",
+      "scenario_id": "privacy_backlash",
+      "seed": 3,
+      "simulation_id": "mf_sim_enterprise_only_privacy_backlash_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_competitor_attack_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_competitor_attack_seed_1",
+      "scenario_id": "competitor_attack",
+      "seed": 1,
+      "simulation_id": "mf_sim_enterprise_only_competitor_attack_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_competitor_attack_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_competitor_attack_seed_2",
+      "scenario_id": "competitor_attack",
+      "seed": 2,
+      "simulation_id": "mf_sim_enterprise_only_competitor_attack_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_competitor_attack_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_competitor_attack_seed_3",
+      "scenario_id": "competitor_attack",
+      "seed": 3,
+      "simulation_id": "mf_sim_enterprise_only_competitor_attack_seed_3",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_regulator_inquiry_seed_1",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_regulator_inquiry_seed_1",
+      "scenario_id": "regulator_inquiry",
+      "seed": 1,
+      "simulation_id": "mf_sim_enterprise_only_regulator_inquiry_seed_1",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_regulator_inquiry_seed_2",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_regulator_inquiry_seed_2",
+      "scenario_id": "regulator_inquiry",
+      "seed": 2,
+      "simulation_id": "mf_sim_enterprise_only_regulator_inquiry_seed_2",
+      "status": "completed"
+    },
+    {
+      "claim_refs": [
+        "claim_0005"
+      ],
+      "clone_project_id": "mf_proj_enterprise_only_regulator_inquiry_seed_3",
+      "graph_mode": "read_only_shared",
+      "mode": "replay",
+      "option_id": "enterprise_only",
+      "run_id": "enterprise_only_regulator_inquiry_seed_3",
+      "scenario_id": "regulator_inquiry",
+      "seed": 3,
+      "simulation_id": "mf_sim_enterprise_only_regulator_inquiry_seed_3",
+      "status": "completed"
+    }
+  ]
+}

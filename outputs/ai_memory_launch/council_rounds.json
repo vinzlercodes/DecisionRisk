@@ -1,0 +1,37 @@
+{
+  "rounds": [
+    {
+      "advisors": [
+        "Growth Strategist",
+        "Trust and Reputation Analyst",
+        "Regulatory Analyst",
+        "Competitor Strategist"
+      ],
+      "claim_refs": [
+        "claim_0001",
+        "claim_0005"
+      ],
+      "name": "Independent analysis",
+      "round": 1
+    },
+    {
+      "claim_refs": [
+        "claim_0002",
+        "claim_0003"
+      ],
+      "name": "Anonymous peer review",
+      "round": 2
+    },
+    {
+      "advisor": "Decision Chair",
+      "claim_refs": [
+        "claim_0001",
+        "claim_0002",
+        "claim_0004"
+      ],
+      "name": "Chair synthesis",
+      "round": 3
+    }
+  ],
+  "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust."
+}

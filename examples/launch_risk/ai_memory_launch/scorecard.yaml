@@ -1,0 +1,28 @@
+{
+  "case_id": "ai_memory_launch",
+  "required_artifacts": [
+    "decision_case",
+    "grounding_report",
+    "risk_graph",
+    "scenario_runs",
+    "simulation_metrics",
+    "council_rounds",
+    "verdict",
+    "risk_docket"
+  ],
+  "ensemble": {
+    "expected_replay_runs": 36,
+    "options": 3,
+    "scenarios": 4,
+    "seeds": 3
+  },
+  "verdict": {
+    "allowed_states": ["RECOMMEND", "DEFER", "NO_GO"],
+    "require_threshold_verdict": true,
+    "require_chair_rationale": true,
+    "require_strongest_dissent": true
+  },
+  "safety": {
+    "require_responsible_use_notice": true
+  }
+}

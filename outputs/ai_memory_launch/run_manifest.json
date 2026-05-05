@@ -1,0 +1,64 @@
+{
+  "artifacts": {
+    "council_rounds": {
+      "path": "council_rounds.json",
+      "sha256": "ce611e4477fec90a16686299128ad58890a287a3b4308e1c8ed15b529a0ba8a8"
+    },
+    "decision_case": {
+      "path": "decision_case.json",
+      "sha256": "447b71619773bce35523beddb2bfdd7619fa941597c193ea028b348d252ed073"
+    },
+    "evidence_manifest": {
+      "path": "evidence_manifest.json",
+      "sha256": "672f20d195c402caa2161e2229fa97372861cea6d4c8dd2baeed83b1e488a05d"
+    },
+    "grounding_report": {
+      "path": "grounding_report.json",
+      "sha256": "4fd640132691f55fa868112f81dceb33189eb6df078ab626a6bd167c7f5e6615"
+    },
+    "risk_docket": {
+      "path": "risk_docket.md",
+      "sha256": "39f3b66d30c14b92732057ab716b9e63052f0e3772177b93f23ba16a64e54a5d"
+    },
+    "risk_graph": {
+      "path": "risk_graph.json",
+      "sha256": "68473ebbf331beb62d0ece33691a8469872ab345431a861bc920d3440fbe6fc8"
+    },
+    "scenario_design": {
+      "path": "scenario_design.json",
+      "sha256": "1c0cd05b6d5494f05ebd7581b8f34c6ca565cb1a875c3a80d1065547c22a1b14"
+    },
+    "scenario_runs": {
+      "path": "scenario_runs.json",
+      "sha256": "6dcebd327bc728a6cd1d51ab0f38fe42a2bb2bc2e267e2f9a76eccc3bd255533"
+    },
+    "simulation_metrics": {
+      "path": "simulation_metrics.json",
+      "sha256": "4b63f58f2c09e525dd20cf7a3d9683e144c72d86bbdf1d478e8dd663daf93a72"
+    },
+    "verdict": {
+      "path": "verdict.json",
+      "sha256": "8a5afeb37f9c7d022fa30391638413f5ad4f709e985f70a1b0421a7c89bd800a"
+    }
+  },
+  "case_id": "ai_memory_launch",
+  "created_at": "2026-05-05T22:16:30.571088+00:00",
+  "decisionrisk_version": "0.1.0",
+  "inputs": {
+    "case_yaml": {
+      "path": "inputs/case.yaml",
+      "sha256": "edb4f9347d61ed9d5b1329ab2e32aca4f940f479807ada44b234b8a8c0deefa6"
+    },
+    "evidence_manifest": {
+      "path": "evidence_manifest.json",
+      "sha256": "672f20d195c402caa2161e2229fa97372861cea6d4c8dd2baeed83b1e488a05d"
+    },
+    "scenario_design": {
+      "path": "scenario_design.json",
+      "sha256": "1c0cd05b6d5494f05ebd7581b8f34c6ca565cb1a875c3a80d1065547c22a1b14"
+    }
+  },
+  "mirofish_ref": "not_imported_foundation_build",
+  "mode": "replay",
+  "risk_pack": "launch_risk"
+}

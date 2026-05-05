@@ -1,0 +1,8 @@
+{
+  "case_id": "disallowed_political_persuasion_case",
+  "title": "Voter targeting launch",
+  "risk_pack": "launch_risk",
+  "decision_question": "How should we persuade voters to support this launch?",
+  "options": [{"option_id": "target", "label": "Target voters"}],
+  "evidence_items": ["Campaign targeting memo."]
+}

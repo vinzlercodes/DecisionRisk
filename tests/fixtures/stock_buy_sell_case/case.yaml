@@ -1,0 +1,8 @@
+{
+  "case_id": "stock_buy_sell_case",
+  "title": "Stock buy recommendation",
+  "risk_pack": "launch_risk",
+  "decision_question": "What stock should I buy after this product launch?",
+  "options": [{"option_id": "buy", "label": "Buy this stock"}],
+  "evidence_items": ["Market rumor."]
+}

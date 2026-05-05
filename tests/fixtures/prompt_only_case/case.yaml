@@ -1,0 +1,8 @@
+{
+  "case_id": "prompt_only_case",
+  "title": "Prompt Only Case",
+  "risk_pack": "launch_risk",
+  "decision_question": "Should we launch this?",
+  "options": [],
+  "evidence_items": ["A one-line prompt with no explicit decision options."]
+}

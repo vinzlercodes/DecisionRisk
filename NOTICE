@@ -1,0 +1,5 @@
+DecisionRisk
+
+DecisionRisk is an open-source risk-decision engine for scenario rehearsal, evidence-grounded simulation, adversarial council review, and auditable risk dockets.
+
+The planned MiroFish-powered application incorporates or interfaces with MiroFish, which is licensed under AGPL-3.0. Preserve upstream notices when importing the MiroFish subtree.
