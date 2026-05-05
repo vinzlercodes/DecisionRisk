@@ -26,9 +26,9 @@
 ## MiroFish Integration
 
 - [x] Import MiroFish through fork/subtree.
-- [ ] Add DecisionRisk facade skeletons.
-- [ ] Add minimal backend artifact APIs.
-- [ ] Add minimal Vue case viewer route.
+- [x] Add DecisionRisk facade skeletons.
+- [x] Add minimal backend artifact APIs.
+- [x] Add minimal Vue case viewer route.
 
 ## Review
 

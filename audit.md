@@ -18,12 +18,12 @@ This file is the live implementation tracker. Every task must update this file b
 - Generated `outputs/ai_memory_launch/` replay artifacts with `run_manifest.json` as the root artifact and validated the manifest/artifact hashes successfully.
 - Converted tests to stdlib `unittest` and verified the replay, validation, ClaimRef, and safety-gate tests pass.
 - Imported upstream MiroFish into `apps/decisionrisk-mirofish/` with `git subtree add --prefix=apps/decisionrisk-mirofish https://github.com/666ghj/MiroFish.git main --squash`.
+- Added DecisionRisk backend blueprint registration, read-only artifact APIs, MiroFish facade skeletons, and minimal Vue case list/viewer routes inside the MiroFish app.
 - Copied the imported MiroFish AGPL-3.0 license to the root `LICENSE`, preserved Apache-2.0 in `packages/decisionrisk-spec/LICENSE`, and updated README quickstart/layout/licensing guidance.
 
 ## Remaining Work
 
 - Push stacked branches and open PRs after GitHub authentication is repaired.
-- Add DecisionRisk backend artifact APIs, MiroFish facade skeletons, and minimal Vue viewer route.
 - Implement live MiroFish facade methods for project, graph, simulation, report, and artifact operations.
 - Wire the minimal Vue case viewer into navigation after product shell decisions.
 - Add frontend build verification once MiroFish frontend dependencies are installed.
@@ -39,15 +39,15 @@ This file is the live implementation tracker. Every task must update this file b
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode replay` passed.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed: 5 tests.
-- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk` passed.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed.
 - MiroFish subtree import completed successfully.
 
 ## Known Limitations
 
 - The MiroFish source subtree import created standard subtree merge commits automatically.
 - Live MiroFish/LLM execution is not yet implemented; replay mode is implemented.
-- MiroFish app integration code is not present in this branch yet.
+- Frontend route code was added but not build-tested because frontend dependencies were not installed in this turn.
 
 ## Next Task
 
-- Add DecisionRisk MiroFish artifact APIs, facade skeletons, and minimal Vue route.
+- Split current implementation into stacked local branches and commits.
