@@ -26,6 +26,11 @@ This file is the live implementation tracker. Every task must update this file b
 
 - Push stacked branches and open PRs after GitHub authentication is repaired.
 - Implement live MiroFish facade methods for project, graph, simulation, report, and artifact operations.
+- Implement the mandatory DecisionRisk verdict evaluation layer:
+  - Pipeline rule: `MiroFish run completes -> MiroFish report + traces + graph + metrics + grounding + ClaimRefs -> DecisionRisk VerdictCouncilRunner runs automatically -> verdict.json + council_rounds.json + risk_docket.md -> final user response`.
+  - Architectural invariant: no MiroFish report is user-final until it passes through the DecisionRisk Verdict Council.
+  - Required services: `VerdictCouncilRunner`, `ReportCritic`, `ClaimRefAuditor`, `VerdictGateEngine`, and `RiskDocketGenerator`.
+  - Required gates: `run_manifest.json` must include the MiroFish report artifact; MiroFish report claims must become ClaimRefs or be marked unsupported; `simulation_metrics.json`, `scenario_runs.json`, `grounding_report.json`, and the MiroFish report must all be loaded before final verdict; `verdict.primary_rationale` cannot be generated without non-unsupported ClaimRefs; final user response must come from `verdict.json` or `risk_docket.md`, never directly from MiroFish report text.
 - Wire the minimal Vue case viewer into navigation after product shell decisions.
 - Add frontend build verification once MiroFish frontend dependencies are installed.
 - Add full seven-step authoring UI after MVP.
@@ -34,6 +39,7 @@ This file is the live implementation tracker. Every task must update this file b
 - Add additional risk packs after MVP.
 - Add live CI smoke workflow after MVP.
 - Keep `demo/README.md` updated as live MiroFish capabilities are implemented.
+- Keep `llm-council` as a reusable general skill only; DecisionRisk's Verdict Council must be product code, not an optional skill-triggered workflow.
 
 ## Validation
 
@@ -53,4 +59,4 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Next Task
 
-- Commit and push the demo guide on a focused branch/PR.
+- Commit and push the audit requirement update on a focused branch/PR.
