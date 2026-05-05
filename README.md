@@ -25,6 +25,8 @@ Run tests:
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests
 ```
 
+For a detailed walkthrough of the current demo capabilities, see [demo/README.md](demo/README.md).
+
 ## Repository Layout
 
 ```txt
