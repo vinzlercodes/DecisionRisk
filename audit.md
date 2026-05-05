@@ -20,6 +20,7 @@ This file is the live implementation tracker. Every task must update this file b
 - Imported upstream MiroFish into `apps/decisionrisk-mirofish/` with `git subtree add --prefix=apps/decisionrisk-mirofish https://github.com/666ghj/MiroFish.git main --squash`.
 - Added DecisionRisk backend blueprint registration, read-only artifact APIs, MiroFish facade skeletons, and minimal Vue case list/viewer routes inside the MiroFish app.
 - Copied the imported MiroFish AGPL-3.0 license to the root `LICENSE`, preserved Apache-2.0 in `packages/decisionrisk-spec/LICENSE`, and updated README quickstart/layout/licensing guidance.
+- Added `demo/README.md` with a detailed walkthrough for replay generation, manifest inspection, validation, ClaimRef provenance, metrics, safety gates, and MiroFish artifact viewer routes.
 
 ## Remaining Work
 
@@ -32,6 +33,7 @@ This file is the live implementation tracker. Every task must update this file b
 - Add heavier automated safety enforcement after MVP.
 - Add additional risk packs after MVP.
 - Add live CI smoke workflow after MVP.
+- Keep `demo/README.md` updated as live MiroFish capabilities are implemented.
 
 ## Validation
 
@@ -41,6 +43,7 @@ This file is the live implementation tracker. Every task must update this file b
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed: 5 tests.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed.
 - MiroFish subtree import completed successfully.
+- Demo guide was added; existing validation commands remain the same.
 
 ## Known Limitations
 
@@ -50,4 +53,4 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Next Task
 
-- Split current implementation into stacked local branches and commits.
+- Commit and push the demo guide on a focused branch/PR.
