@@ -9,15 +9,17 @@ import warnings
 # 需要在所有其他导入之前设置
 warnings.filterwarnings("ignore", message=".*resource_tracker.*")
 
-from flask import Flask, request
-from flask_cors import CORS
-
-from .config import Config
-from .utils.logger import setup_logger, get_logger
-
-
-def create_app(config_class=Config):
+def create_app(config_class=None):
     """Flask应用工厂函数"""
+    from flask import Flask, request
+    from flask_cors import CORS
+
+    from .config import Config
+    from .utils.logger import setup_logger, get_logger
+
+    if config_class is None:
+        config_class = Config
+
     app = Flask(__name__)
     app.config.from_object(config_class)
     
