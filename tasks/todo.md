@@ -34,3 +34,6 @@
 
 - Validation results: replay generation, replay validation, and 5 unittest tests pass.
 - Remaining implementation gaps: see `audit.md`.
+- Source-of-truth review: `DecisionRisk_Project_Source_of_Truth_v3_End_to_End.pdf` v3 was extracted and cross-checked against `audit.md`.
+- GitHub issue backlog: created 25 issues in `vinzlercodes/DecisionRisk`; see `tasks/github-issues.md` for issue numbers, labels, dependencies, acceptance criteria, and source mappings.
+- GitHub creation status: verified with `gh issue list --state all --limit 40 --json number,title,url,labels`.
