@@ -21,12 +21,16 @@ This file is the live implementation tracker. Every task must update this file b
 - Added DecisionRisk backend blueprint registration, read-only artifact APIs, MiroFish facade skeletons, and minimal Vue case list/viewer routes inside the MiroFish app.
 - Copied the imported MiroFish AGPL-3.0 license to the root `LICENSE`, preserved Apache-2.0 in `packages/decisionrisk-spec/LICENSE`, and updated README quickstart/layout/licensing guidance.
 - Added `demo/README.md` with a detailed walkthrough for replay generation, manifest inspection, validation, ClaimRef provenance, metrics, safety gates, and MiroFish artifact viewer routes.
+- Implemented GitHub issue #5 live MiroFish handoff facades for project, graph, simulation, report, and artifact operations inside `apps/decisionrisk-mirofish/`.
+- Added manifest-ready facade contract refs, substrate-only MiroFish report artifact writes, conservative `mirofish_report_claims.json` normalization, and unit tests using local doubles with no live Zep/OASIS/OpenAI dependencies.
+- Made the MiroFish Flask app factory imports lazy so pure DecisionRisk facade modules can be imported by tests and tooling without requiring Flask.
+- Updated `tasks/todo.md`, `tasks/lessons.md`, and `demo/README.md` for the issue #5 implementation and source-hierarchy planning lesson.
 
 ## Remaining Work
 
 - Push stacked branches and open PRs after GitHub authentication is repaired.
 - Use the created source-of-truth GitHub issues (#5 through #29) as the implementation backlog.
-- Implement live MiroFish facade methods for project, graph, simulation, report, and artifact operations.
+- Wire the issue #5 facade surface into the later live runtime orchestrator and manifest writer.
 - Implement the mandatory DecisionRisk verdict evaluation layer:
   - Pipeline rule: `MiroFish run completes -> MiroFish report + traces + graph + metrics + grounding + ClaimRefs -> DecisionRisk VerdictCouncilRunner runs automatically -> verdict.json + council_rounds.json + risk_docket.md -> final user response`.
   - Architectural invariant: no MiroFish report is user-final until it passes through the DecisionRisk Verdict Council.
@@ -66,16 +70,21 @@ This file is the live implementation tracker. Every task must update this file b
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed: 5 tests.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest tests.test_mirofish_facades` passed: 4 tests.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed: 9 tests.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #5 facade implementation.
+- `gh issue close 5 --comment ...` passed and closed `vinzlercodes/DecisionRisk#5`.
 - MiroFish subtree import completed successfully.
 - Demo guide was added; existing validation commands remain the same.
 
 ## Known Limitations
 
 - The MiroFish source subtree import created standard subtree merge commits automatically.
-- Live MiroFish/LLM execution is not yet implemented; replay mode is implemented.
+- Live MiroFish orchestration is not yet implemented; issue #5 now provides the facade surface that later live modes can call.
+- MiroFish report claims are normalized as `unsupported_assumption` substrate until later ClaimRef audit and Verdict Council gates connect them to evidence, traces, graph inferences, or council judgments.
 - Frontend route code was added but not build-tested because frontend dependencies were not installed in this turn.
 - The source-of-truth issue backlog is now remote, but local working tree updates are not committed.
 
 ## Next Task
 
-- Pick the first MVP blocker issue (#5, #6, #7, #8, #10, #15, #20, #21, or #22) and implement it on a focused branch.
+- Pick the next MVP blocker issue (#6, #7, #8, #10, #15, #20, #21, or #22) and implement it on a focused branch.

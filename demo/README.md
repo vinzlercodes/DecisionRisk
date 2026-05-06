@@ -7,8 +7,9 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - ClaimRef provenance enforcement for verdict rationale.
 - Safety gates for prompt-only, no-evidence, political persuasion, stock-advice, and prompt-injection fixtures.
 - Read-only DecisionRisk artifact APIs and Vue routes inside the MiroFish app.
+- Live MiroFish handoff facades for project, graph, simulation, report, and substrate artifact refs.
 
-Live MiroFish graph/simulation/report execution is not implemented yet. The demo uses replay artifacts.
+Live runtime orchestration is not implemented yet. The demo uses replay artifacts, while the issue #5 facade surface now gives later live modes a typed boundary into MiroFish internals.
 
 ## Prerequisites
 
@@ -196,7 +197,7 @@ PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests
 Expected:
 
 ```txt
-Ran 5 tests
+Ran 9 tests
 
 OK
 ```
@@ -208,6 +209,7 @@ The tests cover:
 - Verdict ClaimRef support.
 - Blocked negative fixtures.
 - Prompt-injection warning behavior.
+- MiroFish facade refs, trace collection, report substrate normalization, and artifact SHA-256 refs.
 
 ## 8. Demo Safety Gates
 
@@ -249,7 +251,49 @@ What to point out:
 - Prompt-injection-like evidence is not executed as instruction.
 - It is treated as untrusted quoted evidence and surfaced as a warning.
 
-## 9. Demo the MiroFish Artifact API
+## 9. Inspect the MiroFish Handoff Facades
+
+The issue #5 facade surface lives under:
+
+```txt
+apps/decisionrisk-mirofish/backend/app/decisionrisk/facades/
+```
+
+The key facade calls are:
+
+```txt
+MiroFishProjectFacade.create_base_project
+MiroFishProjectFacade.clone_project_for_run
+MiroFishGraphFacade.build_graph
+MiroFishSimulationFacade.run_simulation
+MiroFishSimulationFacade.collect_simulation_trace
+MiroFishReportFacade.generate_mirofish_report
+MiroFishArtifactFacade.normalize_mirofish_report_to_claims
+MiroFishArtifactFacade.write_mirofish_report_artifact
+```
+
+What to point out:
+
+- Facades return structured refs that can be written into `run_manifest.json`.
+- `mirofish_report.md`, `mirofish_report.json`, and `mirofish_report_claims.json` are substrate artifacts, not final recommendations.
+- Normalized MiroFish report claims are marked `unsupported_assumption` until later ClaimRef audit and Verdict Council gates validate them.
+- The tests use local doubles, so they do not require live Zep, OASIS, OpenAI, or MiroFish credentials.
+
+Run the focused tests:
+
+```bash
+PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest tests.test_mirofish_facades
+```
+
+Expected:
+
+```txt
+Ran 4 tests
+
+OK
+```
+
+## 10. Demo the MiroFish Artifact API
 
 The DecisionRisk API is registered inside the MiroFish Flask app under:
 
@@ -287,7 +331,7 @@ Backend syntax has been checked with:
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk
 ```
 
-## 10. Demo the Vue Route Shape
+## 11. Demo the Vue Route Shape
 
 The current MiroFish frontend includes these DecisionRisk routes:
 
@@ -329,7 +373,8 @@ Use this sequence in a live walkthrough:
 8. Open `risk_docket.md` to show the final decision memo.
 9. Run the unit tests.
 10. Run a blocked negative fixture.
-11. Show the MiroFish artifact API and Vue route files as the bridge to the app.
+11. Show the issue #5 facade files as the typed MiroFish handoff boundary.
+12. Show the MiroFish artifact API and Vue route files as the bridge to the app.
 
 ## Current Boundaries
 
@@ -340,14 +385,15 @@ Implemented:
 - ClaimRef provenance enforcement.
 - Safety gates.
 - MiroFish subtree import.
+- Live MiroFish handoff facade contracts for project, graph, simulation, report, and substrate artifact refs.
 - MiroFish artifact API skeleton.
 - Vue artifact viewer route skeleton.
 
 Not implemented yet:
 
-- Live MiroFish project creation from DecisionCase.
-- Live graph build through the DecisionRisk facade.
-- Live option x scenario x seed simulation execution.
+- Full live runtime orchestration over the issue #5 facades.
+- Runtime-mode-specific manifest writing for live runs.
+- Job lifecycle, retries, cancellation, and resume.
 - Live council runs.
 - Frontend build verification.
 - Full seven-step authoring UI.
