@@ -151,6 +151,11 @@ def validate_output_dir(output_dir: Path, expected_mode: str | None = None) -> l
     if not manifest_path.exists():
         return [f"missing root artifact: {manifest_path}"]
     manifest = read_json(manifest_path)
+    status_path = output_dir / "run_status.json"
+    if status_path.exists():
+        run_status = read_json(status_path)
+        if run_status.get("status") in {"partially_failed", "failed", "cancelled"}:
+            errors.append(f"run_status.json marks output non-final: {run_status.get('status')}")
 
     for key in ("case_id", "risk_pack", "mode", "created_at", "decisionrisk_version", "mirofish_ref", "inputs", "artifacts"):
         if key not in manifest:
