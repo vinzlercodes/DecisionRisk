@@ -38,6 +38,15 @@
 - [x] Add CLI and backend tests for canonical modes and live preflight behavior.
 - [x] Update README, demo guide, and audit tracker for issue #6.
 
+## Issue #7 Execution Orchestration
+
+- [x] Add a hybrid `ExecutionQueue` boundary with a file-backed single-worker MVP implementation.
+- [x] Store executions under `outputs/<case_id>/runs/<execution_id>/` with status, event, error, and manifest artifacts.
+- [x] Wire asynchronous backend run, status, events, cancel, resume, retry, and publish APIs.
+- [x] Preserve legacy case artifact reads while allowing published executions to drive the viewer.
+- [x] Add tests for enqueue, rerun IDs, overwrite, cancellation, partial failure, retry, resume, publish, and validator semantics.
+- [x] Update domain docs, README/demo guidance, task review notes, and `audit.md`.
+
 ## Review
 
 - Validation results: replay generation, replay validation, and 5 unittest tests pass.
@@ -46,3 +55,4 @@
 - GitHub issue backlog: created 25 issues in `vinzlercodes/DecisionRisk`; see `tasks/github-issues.md` for issue numbers, labels, dependencies, acceptance criteria, and source mappings.
 - GitHub creation status: verified with `gh issue list --state all --limit 40 --json number,title,url,labels`.
 - Runtime mode contract: implemented issue #6 contract for CLI and backend, including reduced one-run `live_smoke` validation. Validation results: unittest suite passed with Flask route tests skipped when Flask is unavailable, compileall passed, replay generation passed in `/private/tmp`, existing replay output validation passed, and eval/golden comparison passed.
+- Execution orchestration: implemented issue #7 file-backed Execution queue, run APIs, operational artifacts, explicit publish, retry/resume/cancel semantics, and minimal published-execution viewer wiring. Validation results: compileall passed, unittest discovery passed with 28 tests and 5 Flask route skips because Flask is not installed, replay generation passed in `/private/tmp`, existing replay output validation passed, and eval/golden comparison passed.

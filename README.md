@@ -10,6 +10,8 @@ The current implementation establishes the MiroFish-first monorepo, imports Miro
 
 The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free. Live modes are backend-owned MiroFish runtimes with explicit preflight checks, and raw MiroFish report output is never a final answer.
 
+Backend runs are now represented as long-running DecisionRisk Executions. The backend run API returns an `execution_id` immediately, writes operational status/events/errors under `outputs/<case_id>/runs/<execution_id>/`, and requires an explicit publish step before a validated Execution appears as the case viewer source.
+
 ## Quickstart
 
 Run the deterministic demo without API keys:
@@ -50,6 +52,42 @@ audit.md                          Live implementation audit
 `run_manifest.json` is the root artifact. It points to every input and output artifact with a path and SHA-256 hash. Files are the source of truth for replay and validation.
 
 The manifest `mode` must be one of the canonical runtime modes. `live_smoke` and `live_full` require `DECISIONRISK_ENABLE_LIVE=1`; `live_full` also requires live LLM council enablement and an API key. The clean CLI accepts those modes for contract validation but does not execute MiroFish directly; use `POST /api/decisionrisk/runs` in the backend for live runs.
+
+Execution operational files are mutable while work is in progress:
+
+```txt
+outputs/<case_id>/runs/<execution_id>/
+  run_status.json
+  run_events.jsonl
+  run_error.json
+  run_manifest.json
+```
+
+Once an Execution reaches a terminal validated or published state, `run_manifest.json` records hashes for the operational files in its `operations` section. Partial, failed, or cancelled Executions are not final validation outputs.
+
+## Backend Execution API
+
+Create an Execution:
+
+```http
+POST /api/decisionrisk/runs
+```
+
+The response includes `execution_id`, `case_id`, `mode`, `status`, `stage`, and `status_url`. Poll status and events with:
+
+```http
+GET /api/decisionrisk/runs/<execution_id>/status
+GET /api/decisionrisk/runs/<execution_id>/events
+```
+
+Operational controls:
+
+```http
+POST /api/decisionrisk/runs/<execution_id>/cancel
+POST /api/decisionrisk/runs/<execution_id>/resume
+POST /api/decisionrisk/runs/<execution_id>/publish
+POST /api/decisionrisk/runs/<execution_id>/scenario-runs/<scenario_run_id>/retry
+```
 
 ## Claim Provenance
 

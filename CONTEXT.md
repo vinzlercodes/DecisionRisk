@@ -22,9 +22,13 @@ LaunchRisk is the MVP Risk Pack. It stress-tests product, pricing, policy, publi
 
 A Risk Docket is the final board-style decision memo. It summarizes verdict, evidence, graph findings, scenarios, metrics, council debate, dissent, mitigations, monitoring signals, and audit trail.
 
+### Execution
+
+An Execution is one long-running attempt to run a DecisionCase and produce operational status, event, error, and artifact records.
+
 ### run_manifest.json
 
-`run_manifest.json` is the root artifact for a DecisionRisk run. It is the canonical index that points to every input and output artifact with paths and SHA-256 hashes.
+`run_manifest.json` is the root artifact for a DecisionRisk Execution. It is the canonical index that points to every input and output artifact with paths and SHA-256 hashes.
 
 ### ClaimRef
 
@@ -33,3 +37,14 @@ A ClaimRef is the shared provenance primitive for assertions in durable artifact
 ### Project Audit
 
 `audit.md` is the live project implementation tracker. It is process state, not a generated product artifact.
+
+## Relationships
+
+- A **DecisionCase** can have many **Executions**.
+- An **Execution** belongs to exactly one **DecisionCase**.
+- An **Execution** produces one `run_manifest.json`.
+- A **MiroFish Project** is substrate state used by an **Execution**, not the product-facing aggregate.
+
+## Flagged Ambiguities
+
+- GitHub issue #7 uses `run_id` for the whole long-running job, while earlier MiroFish handoff code uses `run_id` for one option x scenario x seed simulation. Resolved: DecisionRisk uses **Execution** and `execution_id` for the whole job; per-seed MiroFish work remains nested scenario run state.
