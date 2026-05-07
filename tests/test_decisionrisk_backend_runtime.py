@@ -29,8 +29,10 @@ from app.decisionrisk.facades.contracts import (  # noqa: E402
     MiroFishSimulationTrace,
     ScenarioRunRef,
 )
+from app.decisionrisk.execution_orchestrator import FileBackedExecutionQueue  # noqa: E402
 from app.decisionrisk.runtime_runner import DecisionRiskRuntimeRunner  # noqa: E402
-from decisionrisk.artifacts import load_case, read_json  # noqa: E402
+from app.decisionrisk.runtime_runner import RuntimeValidationError  # noqa: E402
+from decisionrisk.artifacts import load_case, read_json, write_json  # noqa: E402
 
 
 CASE_PATH = ROOT / "examples" / "launch_risk" / "ai_memory_launch" / "case.yaml"
@@ -41,6 +43,7 @@ def make_app(outputs_dir: Path) -> Flask:
     app.register_blueprint(decisionrisk_bp, url_prefix="/api/decisionrisk")
     app.config["TESTING"] = True
     os.environ["DECISIONRISK_OUTPUTS_DIR"] = str(outputs_dir)
+    os.environ["DECISIONRISK_EXECUTION_AUTO_START"] = "0"
     return app
 
 
@@ -54,7 +57,7 @@ class DecisionRiskBackendRouteTests(unittest.TestCase):
             names = [item["name"] for item in response.get_json()["modes"]]
             self.assertEqual(names, ["replay", "live_smoke", "live_full", "eval"])
 
-    def test_run_endpoint_writes_replay_manifest(self) -> None:
+    def test_run_endpoint_enqueues_replay_execution(self) -> None:
         case = load_case(CASE_PATH)
         with tempfile.TemporaryDirectory() as tmp:
             app = make_app(Path(tmp))
@@ -65,23 +68,217 @@ class DecisionRiskBackendRouteTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200, response.get_data(as_text=True))
             body = response.get_json()
             self.assertTrue(body["success"])
-            self.assertEqual(body["run"]["mode"], "replay")
-            manifest = read_json(Path(tmp) / case["case_id"] / "run_manifest.json")
-            self.assertEqual(manifest["mode"], "replay")
+            self.assertEqual(body["mode"], "replay")
+            self.assertEqual(body["status"], "queued")
+            self.assertIn("execution_id", body)
 
-    def test_live_smoke_endpoint_fails_preflight_without_live_config(self) -> None:
+            status_response = app.test_client().get(body["status_url"])
+            self.assertEqual(status_response.status_code, 200)
+            self.assertEqual(status_response.get_json()["execution"]["execution_id"], body["execution_id"])
+
+    def test_execution_publish_endpoint_requires_validation(self) -> None:
         case = load_case(CASE_PATH)
         with tempfile.TemporaryDirectory() as tmp:
             app = make_app(Path(tmp))
-            with patch.dict(os.environ, {"DECISIONRISK_OUTPUTS_DIR": str(tmp)}, clear=True):
-                response = app.test_client().post(
-                    "/api/decisionrisk/runs",
-                    json={"mode": "live_smoke", "decision_case": case},
-                )
-            self.assertEqual(response.status_code, 400)
-            body = response.get_json()
-            self.assertEqual(body["stage"], "preflight")
-            self.assertIn("DECISIONRISK_ENABLE_LIVE=1", body["error"])
+            response = app.test_client().post(
+                "/api/decisionrisk/runs",
+                json={"mode": "replay", "decision_case": case},
+            )
+            execution_id = response.get_json()["execution_id"]
+            publish_response = app.test_client().post(f"/api/decisionrisk/runs/{execution_id}/publish")
+            self.assertEqual(publish_response.status_code, 400)
+
+    def test_execution_events_endpoint_reports_queue_event(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            app = make_app(Path(tmp))
+            response = app.test_client().post(
+                "/api/decisionrisk/runs",
+                json={"mode": "replay", "decision_case": case},
+            )
+            execution_id = response.get_json()["execution_id"]
+            events_response = app.test_client().get(f"/api/decisionrisk/runs/{execution_id}/events")
+            self.assertEqual(events_response.status_code, 200)
+            self.assertEqual(events_response.get_json()["events"][0]["event_type"], "execution_queued")
+
+    def test_execution_cancel_endpoint_marks_queued_execution_cancelled(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            app = make_app(Path(tmp))
+            response = app.test_client().post(
+                "/api/decisionrisk/runs",
+                json={"mode": "replay", "decision_case": case},
+            )
+            execution_id = response.get_json()["execution_id"]
+            cancel_response = app.test_client().post(f"/api/decisionrisk/runs/{execution_id}/cancel")
+            self.assertEqual(cancel_response.status_code, 200)
+            self.assertEqual(cancel_response.get_json()["execution"]["status"], "cancelled")
+
+
+class DecisionRiskExecutionQueueTests(unittest.TestCase):
+    def test_enqueue_writes_queued_status_and_event(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            status = queue.enqueue(case, "replay")
+            self.assertEqual(status["status"], "queued")
+            self.assertEqual(status["stage"], "queued")
+            events = queue.events(status["execution_id"])
+            self.assertEqual(events[0]["event_type"], "execution_queued")
+
+    def test_replay_and_eval_execute_through_same_contract(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            replay = queue.enqueue(case, "replay")
+            eval_run = queue.enqueue(case, "eval")
+            self.assertEqual(queue.process_next()["status"], "validated")
+            self.assertEqual(queue.process_next()["status"], "validated")
+            replay_manifest = read_json(
+                Path(tmp) / case["case_id"] / "runs" / replay["execution_id"] / "run_manifest.json"
+            )
+            eval_manifest = read_json(
+                Path(tmp) / case["case_id"] / "runs" / eval_run["execution_id"] / "run_manifest.json"
+            )
+            self.assertEqual(replay_manifest["mode"], "replay")
+            self.assertEqual(eval_manifest["mode"], "eval")
+
+    def test_same_case_rerun_creates_new_execution_id(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            first = queue.enqueue(case, "replay")
+            second = queue.enqueue(case, "replay")
+            self.assertNotEqual(first["execution_id"], second["execution_id"])
+
+    def test_named_overwrite_replaces_existing_execution(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            queue.enqueue(case, "replay", execution_id="ex_named")
+            marker = Path(tmp) / case["case_id"] / "runs" / "ex_named" / "marker.txt"
+            marker.write_text("old", encoding="utf-8")
+            overwritten = queue.enqueue(case, "eval", execution_id="ex_named", overwrite=True)
+            self.assertEqual(overwritten["execution_id"], "ex_named")
+            self.assertFalse(marker.exists())
+            self.assertEqual(overwritten["mode"], "eval")
+
+    def test_running_cancellation_preserves_artifacts_and_marks_non_final(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue: FileBackedExecutionQueue
+
+            class CancellingRunner:
+                def __init__(self, outputs_root: Path) -> None:
+                    self.outputs_root = outputs_root
+
+                def run(self, decision_case, mode, output_dir=None):
+                    queue.cancel(output_dir.name)
+                    return DecisionRiskRuntimeRunner(self.outputs_root).run(decision_case, mode, output_dir=output_dir)
+
+            queue = FileBackedExecutionQueue(Path(tmp), runner_factory=CancellingRunner, auto_start=False)
+            status = queue.enqueue(case, "replay")
+            processed = queue.process_next()
+            self.assertEqual(processed["status"], "cancelled")
+            self.assertFalse(processed["final"])
+            manifest = Path(tmp) / case["case_id"] / "runs" / status["execution_id"] / "run_manifest.json"
+            self.assertTrue(manifest.exists())
+
+    def test_partial_failure_writes_run_error_and_non_final_status(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+
+            class PartialFailingRunner:
+                def __init__(self, outputs_root: Path) -> None:
+                    self.outputs_root = outputs_root
+
+                def run(self, decision_case, mode, output_dir=None):
+                    DecisionRiskRuntimeRunner(self.outputs_root).run(decision_case, mode, output_dir=output_dir)
+                    scenario_path = output_dir / "scenario_runs.json"
+                    scenario_runs = read_json(scenario_path)
+                    scenario_runs["runs"][0]["status"] = "failed"
+                    write_json(scenario_path, scenario_runs)
+                    raise RuntimeValidationError(["simulated partial failure"])
+
+            queue = FileBackedExecutionQueue(Path(tmp), runner_factory=PartialFailingRunner, auto_start=False)
+            status = queue.enqueue(case, "replay")
+            processed = queue.process_next()
+            run_dir = Path(tmp) / case["case_id"] / "runs" / status["execution_id"]
+            self.assertEqual(processed["status"], "partially_failed")
+            self.assertFalse(processed["final"])
+            self.assertTrue((run_dir / "run_error.json").exists())
+
+    def test_failed_scenario_retry_updates_only_failed_seed(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+
+            class PartialFailingRunner:
+                def __init__(self, outputs_root: Path) -> None:
+                    self.outputs_root = outputs_root
+
+                def run(self, decision_case, mode, output_dir=None):
+                    DecisionRiskRuntimeRunner(self.outputs_root).run(decision_case, mode, output_dir=output_dir)
+                    scenario_path = output_dir / "scenario_runs.json"
+                    scenario_runs = read_json(scenario_path)
+                    scenario_runs["runs"][0]["status"] = "failed"
+                    write_json(scenario_path, scenario_runs)
+                    raise RuntimeValidationError(["simulated partial failure"])
+
+            queue = FileBackedExecutionQueue(Path(tmp), runner_factory=PartialFailingRunner, auto_start=False)
+            status = queue.enqueue(case, "replay")
+            queue.process_next()
+            run_dir = Path(tmp) / case["case_id"] / "runs" / status["execution_id"]
+            failed_id = read_json(run_dir / "scenario_runs.json")["runs"][0]["run_id"]
+            retried = queue.retry_scenario_run(status["execution_id"], failed_id)
+            scenario_runs = read_json(run_dir / "scenario_runs.json")
+            self.assertEqual(retried["status"], "validated")
+            self.assertEqual(scenario_runs["runs"][0]["retry_count"], 1)
+            self.assertNotIn("retry_count", scenario_runs["runs"][1])
+
+    def test_resume_blocks_when_checkpoint_hashes_changed(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            status = queue.enqueue(case, "replay")
+            queue.process_next()
+            run_dir = Path(tmp) / case["case_id"] / "runs" / status["execution_id"]
+            (run_dir / "verdict.json").write_text("{}", encoding="utf-8")
+            resumed = queue.resume(status["execution_id"])
+            self.assertEqual(resumed["status"], "failed")
+            self.assertEqual(resumed["stage"], "resume_blocked")
+
+    def test_publish_requires_validated_execution(self) -> None:
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = FileBackedExecutionQueue(Path(tmp), auto_start=False)
+            status = queue.enqueue(case, "replay")
+            with self.assertRaises(ValueError):
+                queue.publish(status["execution_id"])
+            queue.process_next()
+            published = queue.publish(status["execution_id"])
+            self.assertEqual(published["status"], "published")
+            self.assertTrue(published["published"])
+
+    def test_validator_rejects_partial_execution_outputs(self) -> None:
+        from decisionrisk.cli import validate_output_dir
+
+        case = load_case(CASE_PATH)
+        with tempfile.TemporaryDirectory() as tmp:
+
+            class PartialFailingRunner:
+                def __init__(self, outputs_root: Path) -> None:
+                    self.outputs_root = outputs_root
+
+                def run(self, decision_case, mode, output_dir=None):
+                    DecisionRiskRuntimeRunner(self.outputs_root).run(decision_case, mode, output_dir=output_dir)
+                    raise RuntimeValidationError(["simulated partial failure"])
+
+            queue = FileBackedExecutionQueue(Path(tmp), runner_factory=PartialFailingRunner, auto_start=False)
+            status = queue.enqueue(case, "replay")
+            queue.process_next()
+            run_dir = Path(tmp) / case["case_id"] / "runs" / status["execution_id"]
+            errors = validate_output_dir(run_dir)
+            self.assertIn("run_status.json marks output non-final: partially_failed", errors)
 
 
 class DecisionRiskBackendRunnerTests(unittest.TestCase):

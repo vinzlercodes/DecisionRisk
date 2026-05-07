@@ -68,7 +68,7 @@ class DecisionRiskRuntimeRunner:
             self._artifact_facade = MiroFishArtifactFacade()
         return self._artifact_facade
 
-    def run(self, decision_case: dict[str, Any], mode: str) -> dict[str, Any]:
+    def run(self, decision_case: dict[str, Any], mode: str, output_dir: Path | None = None) -> dict[str, Any]:
         mode = parse_runtime_mode(mode)
         assessment = assess_case(decision_case)
         if not assessment.allowed:
@@ -79,9 +79,9 @@ class DecisionRiskRuntimeRunner:
             raise RuntimePreflightError(str(exc)) from exc
 
         if mode in {"replay", "eval"}:
-            output_dir = self._write_canonical_artifacts(decision_case, mode)
+            output_dir = self._write_canonical_artifacts(decision_case, mode, output_dir=output_dir)
         elif mode == "live_smoke":
-            output_dir = self._run_live_smoke(decision_case)
+            output_dir = self._run_live_smoke(decision_case, output_dir=output_dir)
         else:
             raise RuntimeNotImplementedError(
                 "live_full requires the live Verdict Council pipeline from issue #8 and is not downgraded to replay."
@@ -101,7 +101,7 @@ class DecisionRiskRuntimeRunner:
             },
         }
 
-    def _run_live_smoke(self, decision_case: dict[str, Any]) -> Path:
+    def _run_live_smoke(self, decision_case: dict[str, Any], output_dir: Path | None = None) -> Path:
         payloads = artifact_payloads(decision_case)
         evidence_manifest = payloads["evidence_manifest"]
         base_project = self.project_facade.create_base_project(decision_case, evidence_manifest)
@@ -142,6 +142,7 @@ class DecisionRiskRuntimeRunner:
             decision_case,
             "live_smoke",
             mirofish_ref=base_project.project_id,
+            output_dir=output_dir,
         )
         store = ArtifactStore(output_dir)
         live_scenario_runs = {
@@ -197,8 +198,9 @@ class DecisionRiskRuntimeRunner:
         decision_case: dict[str, Any],
         mode: str,
         mirofish_ref: str = "not_used_clean_spec_runtime",
+        output_dir: Path | None = None,
     ) -> Path:
-        output_dir = self.outputs_root / str(decision_case["case_id"])
+        output_dir = output_dir or self.outputs_root / str(decision_case["case_id"])
         store = ArtifactStore(output_dir)
         case_path = output_dir / "inputs" / "case.json"
         case_path.parent.mkdir(parents=True, exist_ok=True)
