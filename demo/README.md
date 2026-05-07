@@ -8,8 +8,9 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - Safety gates for prompt-only, no-evidence, political persuasion, stock-advice, and prompt-injection fixtures.
 - Read-only DecisionRisk artifact APIs and Vue routes inside the MiroFish app.
 - Canonical runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
+- File-backed long-running Execution orchestration for backend runs.
 
-Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; robust long-running orchestration and the live Verdict Council remain follow-up work.
+Replay and eval use clean deterministic artifacts. Backend-created runs are represented as Executions with `execution_id`, status, event, error, cancellation, resume, retry, validation, and publish state. The live Verdict Council remains follow-up work.
 
 ## Prerequisites
 
@@ -264,6 +265,12 @@ Key routes:
 ```txt
 GET /api/decisionrisk/runtime-modes
 POST /api/decisionrisk/runs
+GET /api/decisionrisk/runs/:execution_id/status
+GET /api/decisionrisk/runs/:execution_id/events
+POST /api/decisionrisk/runs/:execution_id/cancel
+POST /api/decisionrisk/runs/:execution_id/resume
+POST /api/decisionrisk/runs/:execution_id/publish
+POST /api/decisionrisk/runs/:execution_id/scenario-runs/:scenario_run_id/retry
 GET /api/decisionrisk/cases
 GET /api/decisionrisk/cases/:case_id
 GET /api/decisionrisk/cases/:case_id/artifacts
@@ -286,6 +293,32 @@ GET /api/decisionrisk/cases/:case_id/risk-docket
   }
 }
 ```
+
+It returns an Execution envelope instead of blocking until the run is done:
+
+```json
+{
+  "success": true,
+  "execution_id": "ex_20260507T120000Z_1234abcd",
+  "case_id": "ai_memory_launch",
+  "mode": "replay",
+  "status": "queued",
+  "stage": "queued",
+  "status_url": "/api/decisionrisk/runs/ex_20260507T120000Z_1234abcd/status"
+}
+```
+
+Execution artifacts are written under:
+
+```txt
+outputs/ai_memory_launch/runs/<execution_id>/
+  run_status.json
+  run_events.jsonl
+  run_error.json
+  run_manifest.json
+```
+
+The case viewer lists published executions. A validated execution must be explicitly published before it becomes the default case artifact source.
 
 Live modes require explicit environment configuration:
 
@@ -322,6 +355,7 @@ The current MiroFish frontend includes these DecisionRisk routes:
 ```txt
 /decisionrisk
 /decisionrisk/:caseId
+/decisionrisk/:caseId?execution_id=<execution_id>
 ```
 
 Implemented files:
@@ -358,6 +392,7 @@ Use this sequence in a live walkthrough:
 9. Run the unit tests.
 10. Run a blocked negative fixture.
 11. Show the MiroFish artifact API and Vue route files as the bridge to the app.
+12. Show `POST /api/decisionrisk/runs` returning an `execution_id`, then inspect that execution's `run_status.json` and `run_events.jsonl`.
 
 ## Current Boundaries
 

@@ -4,8 +4,8 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Current Status
 
-- Status: Foundation MVP slice plus runtime mode contract implemented.
-- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, ClaimRef enforcement, CLI validation, backend runtime preflight, and documented MiroFish integration boundary.
+- Status: Foundation MVP slice plus runtime mode contract and issue #7 Execution orchestration implemented.
+- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, ClaimRef enforcement, CLI validation, backend runtime preflight, file-backed Execution orchestration, and documented MiroFish integration boundary.
 
 ## Completed Work
 
@@ -25,6 +25,13 @@ This file is the live implementation tracker. Every task must update this file b
 - Updated the CLI to reject legacy `live`/`record`, keep replay deterministic, support eval/golden comparison, validate manifest mode values, and preflight live modes without executing MiroFish from the clean package.
 - Added backend runtime mode discovery and run creation APIs under `/api/decisionrisk/runtime-modes` and `/api/decisionrisk/runs`.
 - Added a backend runtime runner that writes replay/eval artifacts, routes a reduced one-run `live_smoke` through the existing MiroFish facade boundary when configured, writes substrate-only MiroFish report artifacts, and refuses to downgrade `live_full` before the live Verdict Council exists.
+- Added a hybrid `ExecutionQueue` boundary with a file-backed single-worker MVP implementation for long-running DecisionRisk Executions.
+- Changed backend run creation to enqueue an Execution under `outputs/<case_id>/runs/<execution_id>/` and return `execution_id`, status, stage, and status URL immediately.
+- Added Execution status, event, cancellation, resume, publish, failed-scenario retry, and retry-all-failed backend APIs.
+- Added operational artifacts: `run_status.json`, `run_events.jsonl`, and `run_error.json`, with final operation-file hashes recorded in `run_manifest.json` when applicable.
+- Preserved legacy case artifact reads while allowing published Execution directories to drive DecisionRisk case lists and artifact reads.
+- Updated the minimal Vue DecisionRisk API client/list/viewer to pass `execution_id` for published executions.
+- Added `Execution` to `CONTEXT.md` and documented the intentional `execution_id` terminology choice.
 
 ## Remaining Work
 
@@ -46,7 +53,6 @@ This file is the live implementation tracker. Every task must update this file b
 - Keep `demo/README.md` updated as live MiroFish capabilities are implemented.
 - Keep `llm-council` as a reusable general skill only; DecisionRisk's Verdict Council must be product code, not an optional skill-triggered workflow.
 - Implement the expanded source-of-truth requirements captured as GitHub issue drafts:
-  - Long-running run orchestration with `run_status.json`, `run_events.jsonl`, `run_error.json`, retries, cancellation, idempotency, and resume.
   - Artifact schema versioning, risk pack versions, generator versions, and migration tooling.
   - File-backed LaunchRisk risk pack contract.
   - Final case viewer tabs, artifact audit UI, navigation integration, and later seven-step authoring UI.
@@ -75,6 +81,12 @@ This file is the live implementation tracker. Every task must update this file b
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed after runtime mode validation changes.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-runtime-eval --golden-dir outputs/ai_memory_launch` passed.
 - Focused backend runner tests passed for reduced `live_smoke` substrate artifacts and `live_full` no-downgrade behavior.
+- Focused backend runtime/orchestration tests passed for issue #7 with Flask route tests skipped when Flask is unavailable.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #7 orchestration work.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed after issue #7 orchestration work: 28 tests, 5 Flask route tests skipped because Flask is not installed in the active interpreter.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode replay --output-dir /private/tmp/decisionrisk-issue7-replay` passed.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed after issue #7 validator changes.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-issue7-eval --golden-dir outputs/ai_memory_launch` passed.
 - MiroFish subtree import completed successfully.
 - Demo guide was added; existing validation commands remain the same.
 
@@ -83,9 +95,11 @@ This file is the live implementation tracker. Every task must update this file b
 - The MiroFish source subtree import created standard subtree merge commits automatically.
 - Full live MiroFish/LLM execution is not yet implemented; replay and eval are implemented in the clean CLI, and backend `live_smoke` has a reduced one-run facade-backed path for configured environments/test doubles.
 - `live_full` intentionally fails unless live LLM preflight passes and then remains blocked until issue #8 implements the real Verdict Council pipeline; it does not silently fall back to replay.
-- Frontend route code was added but not build-tested because frontend dependencies were not installed in this turn.
+- Execution orchestration is file-backed and single-worker for MVP. The queue boundary is in place for future Redis/Celery-style durability, but no external queue is configured.
+- Cooperative cancellation is honored at Execution stage boundaries and after the current runner stage completes; it does not forcibly terminate arbitrary in-flight work.
+- Frontend route code was updated but not build-tested because `apps/decisionrisk-mirofish/frontend/node_modules` is not installed in this environment.
 - The source-of-truth issue backlog is now remote, but local working tree updates are not committed.
 
 ## Next Task
 
-- Pick the next MVP blocker issue (#5, #7, #8, #10, #15, #20, #21, or #22) and implement it on a focused branch.
+- Pick the next MVP blocker issue (#5, #8, #10, #15, #20, #21, or #22) and implement it on a focused branch.
