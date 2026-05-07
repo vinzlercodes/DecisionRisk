@@ -4,6 +4,7 @@
       <RouterLink to="/decisionrisk">DecisionRisk</RouterLink>
       <h1>{{ caseId }}</h1>
       <p v-if="manifest">{{ manifest.risk_pack }} · {{ manifest.mode }} · {{ manifest.created_at }}</p>
+      <p v-if="executionId">Execution: {{ executionId }}</p>
     </header>
 
     <section v-if="verdict" class="panel verdict">
@@ -69,6 +70,7 @@ import { getDecisionRiskArtifact, getDecisionRiskCase, getRiskDocket } from '../
 
 const route = useRoute()
 const caseId = route.params.caseId
+const executionId = route.query.execution_id || ''
 const manifest = ref(null)
 const verdict = ref(null)
 const metrics = ref(null)
@@ -78,12 +80,12 @@ const council = ref(null)
 const docket = ref('')
 
 const loadArtifact = async name => {
-  const response = await getDecisionRiskArtifact(caseId, name)
+  const response = await getDecisionRiskArtifact(caseId, name, executionId)
   return response.artifact
 }
 
 onMounted(async () => {
-  const response = await getDecisionRiskCase(caseId)
+  const response = await getDecisionRiskCase(caseId, executionId)
   manifest.value = response.manifest
   ;[verdict.value, metrics.value, grounding.value, runs.value, council.value] = await Promise.all([
     loadArtifact('verdict'),
@@ -92,7 +94,7 @@ onMounted(async () => {
     loadArtifact('scenario_runs'),
     loadArtifact('council_rounds')
   ])
-  docket.value = await getRiskDocket(caseId)
+  docket.value = await getRiskDocket(caseId, executionId)
 })
 </script>
 
