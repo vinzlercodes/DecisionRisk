@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -37,6 +38,63 @@ class DecisionRiskCliTests(unittest.TestCase):
             self.assertEqual(manifest["mode"], "replay")
             self.assertIn("sha256", manifest["artifacts"]["verdict"])
             self.assertTrue((output_dir / manifest["artifacts"]["risk_docket"]["path"]).exists())
+
+    def test_legacy_runtime_modes_are_rejected(self) -> None:
+        for legacy_mode in ("live", "record"):
+            result = run_cli("run", str(CASE), "--mode", legacy_mode)
+            self.assertEqual(result.returncode, 2, legacy_mode)
+            self.assertIn("invalid choice", result.stderr)
+
+    def test_eval_run_writes_replay_shaped_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "eval_ai_memory_launch"
+            result = run_cli("run", str(CASE), "--mode", "eval", "--output-dir", str(output_dir))
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            manifest = read_json(output_dir / "run_manifest.json")
+            self.assertEqual(manifest["mode"], "eval")
+            self.assertIn("verdict", manifest["artifacts"])
+            self.assertIn("risk_docket", manifest["artifacts"])
+
+            validate_result = run_cli("validate", str(output_dir))
+            self.assertEqual(validate_result.returncode, 0, validate_result.stderr)
+            mismatch_result = run_cli("validate", str(output_dir), "--mode", "replay")
+            self.assertEqual(mismatch_result.returncode, 1)
+            self.assertIn("does not match requested mode replay", mismatch_result.stderr)
+
+    def test_eval_can_compare_against_golden_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            golden_dir = Path(tmp) / "golden"
+            eval_dir = Path(tmp) / "eval"
+            replay_result = run_cli("run", str(CASE), "--mode", "replay", "--output-dir", str(golden_dir))
+            self.assertEqual(replay_result.returncode, 0, replay_result.stderr)
+
+            eval_result = run_cli(
+                "run",
+                str(CASE),
+                "--mode",
+                "eval",
+                "--output-dir",
+                str(eval_dir),
+                "--golden-dir",
+                str(golden_dir),
+            )
+            self.assertEqual(eval_result.returncode, 0, eval_result.stderr)
+
+    def test_live_modes_fail_preflight_without_live_config(self) -> None:
+        env = os.environ.copy()
+        env.pop("DECISIONRISK_ENABLE_LIVE", None)
+        for mode in ("live_smoke", "live_full"):
+            result = subprocess.run(
+                [sys.executable, "-m", "decisionrisk", "run", str(CASE), "--mode", mode],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 2, mode)
+            self.assertIn("runtime mode preflight failed", result.stderr)
 
     def test_validate_replay_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -7,8 +7,9 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - ClaimRef provenance enforcement for verdict rationale.
 - Safety gates for prompt-only, no-evidence, political persuasion, stock-advice, and prompt-injection fixtures.
 - Read-only DecisionRisk artifact APIs and Vue routes inside the MiroFish app.
+- Canonical runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
 
-Live MiroFish graph/simulation/report execution is not implemented yet. The demo uses replay artifacts.
+Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; robust long-running orchestration and the live Verdict Council remain follow-up work.
 
 ## Prerequisites
 
@@ -71,7 +72,8 @@ What to point out:
 - `run_manifest.json` is the root artifact.
 - Every input and output has a `path`.
 - Every input and output has a `sha256`.
-- `mirofish_ref` is currently `not_imported_foundation_build` for replay mode.
+- `mode` is one of `replay`, `live_smoke`, `live_full`, or `eval`.
+- `mirofish_ref` is `not_used_clean_spec_runtime` for clean replay/eval mode.
 - Files, not runtime task state, are the source of truth for replay validation.
 
 ## 3. Validate the Artifact Contract
@@ -260,11 +262,37 @@ The DecisionRisk API is registered inside the MiroFish Flask app under:
 Key routes:
 
 ```txt
+GET /api/decisionrisk/runtime-modes
+POST /api/decisionrisk/runs
 GET /api/decisionrisk/cases
 GET /api/decisionrisk/cases/:case_id
 GET /api/decisionrisk/cases/:case_id/artifacts
 GET /api/decisionrisk/cases/:case_id/artifacts/:artifact_name
 GET /api/decisionrisk/cases/:case_id/risk-docket
+```
+
+`POST /api/decisionrisk/runs` accepts:
+
+```json
+{
+  "mode": "replay",
+  "decision_case": {
+    "case_id": "ai_memory_launch",
+    "title": "AcmeAI Memory Launch Risk",
+    "risk_pack": "launch_risk",
+    "decision_question": "Should AcmeAI launch long-term assistant memory as default-on, opt-in beta, or enterprise-only?",
+    "options": [{"option_id": "default_on", "label": "Default-on public launch"}],
+    "evidence_items": ["sources/synthetic/launch_memo.md"]
+  }
+}
+```
+
+Live modes require explicit environment configuration:
+
+```txt
+DECISIONRISK_ENABLE_LIVE=1
+DECISIONRISK_ENABLE_LIVE_LLM=1
+DECISIONRISK_LLM_API_KEY or LLM_API_KEY or OPENAI_API_KEY
 ```
 
 The artifact API reads from:
