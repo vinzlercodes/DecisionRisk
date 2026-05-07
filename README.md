@@ -8,7 +8,7 @@ It helps teams rehearse consequential decisions with evidence graphs, scenario e
 
 The current implementation establishes the MiroFish-first monorepo, imports MiroFish under `apps/decisionrisk-mirofish/`, and ships a deterministic replay foundation for the LaunchRisk `ai_memory_launch` demo.
 
-The replay path produces a root `run_manifest.json` with SHA-256 references to every artifact, then validates the manifest, ClaimRefs, verdict provenance, scenario count, and Risk Docket sections.
+The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free. Live modes are backend-owned MiroFish runtimes with explicit preflight checks, and raw MiroFish report output is never a final answer.
 
 ## Quickstart
 
@@ -17,6 +17,12 @@ Run the deterministic demo without API keys:
 ```bash
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode replay
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch
+```
+
+Run an eval-shaped artifact generation and compare it with golden replay outputs:
+
+```bash
+PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-eval --golden-dir outputs/ai_memory_launch
 ```
 
 Run tests:
@@ -42,6 +48,8 @@ audit.md                          Live implementation audit
 ## Artifact Contract
 
 `run_manifest.json` is the root artifact. It points to every input and output artifact with a path and SHA-256 hash. Files are the source of truth for replay and validation.
+
+The manifest `mode` must be one of the canonical runtime modes. `live_smoke` and `live_full` require `DECISIONRISK_ENABLE_LIVE=1`; `live_full` also requires live LLM council enablement and an API key. The clean CLI accepts those modes for contract validation but does not execute MiroFish directly; use `POST /api/decisionrisk/runs` in the backend for live runs.
 
 ## Claim Provenance
 
