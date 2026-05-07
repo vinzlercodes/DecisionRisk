@@ -30,6 +30,14 @@
 - [x] Add minimal backend artifact APIs.
 - [x] Add minimal Vue case viewer route.
 
+## Runtime Mode Contract
+
+- [x] Add shared runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
+- [x] Update CLI parsing, preflight checks, eval mode, and validation behavior.
+- [x] Add backend runtime mode discovery and run creation endpoints.
+- [x] Add CLI and backend tests for canonical modes and live preflight behavior.
+- [x] Update README, demo guide, and audit tracker for issue #6.
+
 ## Review
 
 - Validation results: replay generation, replay validation, and 5 unittest tests pass.
@@ -37,3 +45,4 @@
 - Source-of-truth review: `DecisionRisk_Project_Source_of_Truth_v3_End_to_End.pdf` v3 was extracted and cross-checked against `audit.md`.
 - GitHub issue backlog: created 25 issues in `vinzlercodes/DecisionRisk`; see `tasks/github-issues.md` for issue numbers, labels, dependencies, acceptance criteria, and source mappings.
 - GitHub creation status: verified with `gh issue list --state all --limit 40 --json number,title,url,labels`.
+- Runtime mode contract: implemented issue #6 contract for CLI and backend, including reduced one-run `live_smoke` validation. Validation results: unittest suite passed with Flask route tests skipped when Flask is unavailable, compileall passed, replay generation passed in `/private/tmp`, existing replay output validation passed, and eval/golden comparison passed.
