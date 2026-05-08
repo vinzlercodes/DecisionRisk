@@ -10,7 +10,8 @@ from typing import Any
 
 from . import __version__
 from .artifacts import ArtifactStore, artifact_paths, collect_claim_refs, load_case, read_json, sha256_file, write_json
-from .fixtures import artifact_payloads, risk_docket_markdown
+from .council import ClaimRefAuditor, VerdictCouncilRunner
+from .fixtures import artifact_payloads
 from .runtime_modes import CANONICAL_RUNTIME_MODES, assert_runtime_mode_available, parse_runtime_mode
 from .safety import assess_case
 
@@ -38,6 +39,8 @@ REQUIRED_DOCKET_SECTIONS = [
     "Monitoring Plan",
     "Audit Trail",
 ]
+
+COUNCIL_OUTPUT_ARTIFACTS = {"council_rounds", "verdict"}
 
 
 def run_case(args: argparse.Namespace) -> int:
@@ -98,10 +101,17 @@ def write_replay_shaped_run(
 
     artifact_refs: dict[str, dict[str, str]] = {}
     payloads = artifact_payloads(case)
-    for name, payload in payloads.items():
+    council_inputs = {name: payload for name, payload in payloads.items() if name not in COUNCIL_OUTPUT_ARTIFACTS}
+    for name, payload in council_inputs.items():
         artifact_refs[name] = store.write_json_artifact(name, payload).as_dict()
 
-    artifact_refs["risk_docket"] = store.write_text_artifact("risk_docket.md", risk_docket_markdown()).as_dict()
+    council_outputs = VerdictCouncilRunner().run(council_inputs, mode=mode)
+    artifact_refs["council_rounds"] = store.write_json_artifact(
+        "council_rounds",
+        council_outputs["council_rounds"],
+    ).as_dict()
+    artifact_refs["verdict"] = store.write_json_artifact("verdict", council_outputs["verdict"]).as_dict()
+    artifact_refs["risk_docket"] = store.write_text_artifact("risk_docket.md", council_outputs["risk_docket"]).as_dict()
     input_refs["evidence_manifest"] = artifact_refs["evidence_manifest"]
     input_refs["scenario_design"] = artifact_refs["scenario_design"]
 
@@ -203,11 +213,17 @@ def validate_output_dir(output_dir: Path, expected_mode: str | None = None) -> l
         refs = verdict.get("primary_rationale_claim_refs", [])
         if not refs:
             errors.append("verdict.primary_rationale has no ClaimRef references")
-        supported = [claim_index.get(ref) for ref in refs if claim_index.get(ref, {}).get("status") != "unsupported_assumption"]
+        auditor = ClaimRefAuditor()
+        supported = [claim_index.get(ref) for ref in refs if auditor.primary_rationale_eligible(claim_index.get(ref, {}))]
         if not supported:
             errors.append("verdict.primary_rationale lacks a non-unsupported ClaimRef")
         if verdict.get("final_verdict") not in {"RECOMMEND", "DEFER", "NO_GO"}:
             errors.append("verdict.final_verdict is not allowed")
+
+    if any(name.startswith("mirofish_report") for name in artifacts):
+        missing_council = {"council_rounds", "verdict", "risk_docket"} - set(artifacts)
+        if missing_council:
+            errors.append(f"MiroFish report substrate is not final without council artifacts: {sorted(missing_council)}")
 
     scenario_ref = artifacts.get("scenario_runs")
     if scenario_ref:
