@@ -311,11 +311,18 @@ class DecisionRiskBackendRunnerTests(unittest.TestCase):
             self.assertEqual(manifest["mode"], "live_smoke")
             self.assertIn("mirofish_report", manifest["artifacts"])
             self.assertIn("mirofish_report_markdown", manifest["artifacts"])
+            self.assertIn("council_rounds", manifest["artifacts"])
+            self.assertIn("verdict", manifest["artifacts"])
+            self.assertIn("risk_docket", manifest["artifacts"])
             scenario_runs = read_json(Path(tmp) / case["case_id"] / "scenario_runs.json")
             self.assertEqual(scenario_runs["expected_runs"], 1)
             self.assertEqual(scenario_runs["runs"][0]["mode"], "live_smoke")
             substrate = read_json(Path(tmp) / case["case_id"] / "mirofish_report_claims.json")
             self.assertTrue(substrate["substrate_only"])
+            council_rounds = read_json(Path(tmp) / case["case_id"] / "council_rounds.json")
+            self.assertEqual(council_rounds["mode"], "live_smoke")
+            self.assertTrue(council_rounds["rounds"][1]["report_critique"]["substrate_present"])
+            self.assertEqual(council_rounds["claim_refs"][0]["status"], "council_judgment")
 
     def test_live_full_requires_llm_config_and_does_not_downgrade(self) -> None:
         case = load_case(CASE_PATH)
@@ -339,7 +346,7 @@ class DecisionRiskBackendRunnerTests(unittest.TestCase):
             with patch.dict(os.environ, env, clear=True):
                 with self.assertRaises(RuntimeError) as raised:
                     runner.run(case, "live_full")
-            self.assertIn("live_full requires the live Verdict Council pipeline", str(raised.exception))
+            self.assertIn("live_full requires live Verdict Council role and model configuration", str(raised.exception))
             self.assertFalse((Path(tmp) / case["case_id"] / "run_manifest.json").exists())
 
 

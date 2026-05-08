@@ -8,8 +8,9 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - Safety gates for prompt-only, no-evidence, political persuasion, stock-advice, and prompt-injection fixtures.
 - Read-only DecisionRisk artifact APIs and Vue routes inside the MiroFish app.
 - Canonical runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
+- Deterministic Verdict Council pipeline for replay, eval, and reduced `live_smoke`.
 
-Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; robust long-running orchestration and the live Verdict Council remain follow-up work.
+Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; `live_smoke` now writes raw MiroFish report substrate before the deterministic Verdict Council produces final artifacts. Robust live role/model configuration remains follow-up work.
 
 ## Prerequisites
 
@@ -198,8 +199,6 @@ PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests
 Expected:
 
 ```txt
-Ran 5 tests
-
 OK
 ```
 
@@ -207,6 +206,8 @@ The tests cover:
 
 - Replay artifact generation.
 - Replay output validation.
+- Deterministic Verdict Council services.
+- MiroFish substrate finalization gates.
 - Verdict ClaimRef support.
 - Blocked negative fixtures.
 - Prompt-injection warning behavior.
@@ -366,6 +367,8 @@ Implemented:
 - Replay-mode artifact generation.
 - Artifact validation.
 - ClaimRef provenance enforcement.
+- Deterministic Verdict Council pipeline.
+- Reduced live_smoke MiroFish substrate handoff into the Verdict Council.
 - Safety gates.
 - MiroFish subtree import.
 - MiroFish artifact API skeleton.
@@ -373,9 +376,7 @@ Implemented:
 
 Not implemented yet:
 
-- Live MiroFish project creation from DecisionCase.
-- Live graph build through the DecisionRisk facade.
-- Live option x scenario x seed simulation execution.
-- Live council runs.
+- Production live MiroFish project, graph, simulation, and report behavior beyond the reduced smoke path.
+- Live LLM Verdict Council role/model configuration for `live_full`.
 - Frontend build verification.
 - Full seven-step authoring UI.

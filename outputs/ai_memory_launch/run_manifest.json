@@ -2,7 +2,7 @@
   "artifacts": {
     "council_rounds": {
       "path": "council_rounds.json",
-      "sha256": "ce611e4477fec90a16686299128ad58890a287a3b4308e1c8ed15b529a0ba8a8"
+      "sha256": "9cbf3e09561d3f20f3df641830111d49e7ec265659db3603d80f884e2eeee9d0"
     },
     "decision_case": {
       "path": "decision_case.json",
@@ -18,7 +18,7 @@
     },
     "risk_docket": {
       "path": "risk_docket.md",
-      "sha256": "39f3b66d30c14b92732057ab716b9e63052f0e3772177b93f23ba16a64e54a5d"
+      "sha256": "82877d79570df6a1ad56a8e3eac6aff3ca52a32be79da82d5b7744655aa49546"
     },
     "risk_graph": {
       "path": "risk_graph.json",
@@ -38,11 +38,11 @@
     },
     "verdict": {
       "path": "verdict.json",
-      "sha256": "8a5afeb37f9c7d022fa30391638413f5ad4f709e985f70a1b0421a7c89bd800a"
+      "sha256": "f7861617c62e187060f8f0f5403fddb831cfa34f4498fda9a188a50327d8b051"
     }
   },
   "case_id": "ai_memory_launch",
-  "created_at": "2026-05-05T22:16:30.571088+00:00",
+  "created_at": "2026-05-08T05:07:31.152622+00:00",
   "decisionrisk_version": "0.1.0",
   "inputs": {
     "case_yaml": {
@@ -58,7 +58,7 @@
       "sha256": "1c0cd05b6d5494f05ebd7581b8f34c6ca565cb1a875c3a80d1065547c22a1b14"
     }
   },
-  "mirofish_ref": "not_imported_foundation_build",
+  "mirofish_ref": "not_used_clean_spec_runtime",
   "mode": "replay",
   "risk_pack": "launch_risk"
 }

@@ -8,7 +8,7 @@ It helps teams rehearse consequential decisions with evidence graphs, scenario e
 
 The current implementation establishes the MiroFish-first monorepo, imports MiroFish under `apps/decisionrisk-mirofish/`, and ships a deterministic replay foundation for the LaunchRisk `ai_memory_launch` demo.
 
-The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free. Live modes are backend-owned MiroFish runtimes with explicit preflight checks, and raw MiroFish report output is never a final answer.
+The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free. Live modes are backend-owned MiroFish runtimes with explicit preflight checks. Replay, eval, and reduced `live_smoke` runs finalize through the deterministic Verdict Council, and raw MiroFish report output is never a final answer.
 
 ## Quickstart
 
