@@ -4,8 +4,8 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Current Status
 
-- Status: Foundation MVP slice plus runtime mode contract implemented.
-- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, ClaimRef enforcement, CLI validation, backend runtime preflight, and documented MiroFish integration boundary.
+- Status: Foundation MVP slice, runtime mode contract, and deterministic Verdict Council pipeline implemented.
+- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, ClaimRef enforcement, CLI validation, backend runtime preflight, deterministic Verdict Council finalization, and documented MiroFish integration boundary.
 
 ## Completed Work
 
@@ -25,17 +25,18 @@ This file is the live implementation tracker. Every task must update this file b
 - Updated the CLI to reject legacy `live`/`record`, keep replay deterministic, support eval/golden comparison, validate manifest mode values, and preflight live modes without executing MiroFish from the clean package.
 - Added backend runtime mode discovery and run creation APIs under `/api/decisionrisk/runtime-modes` and `/api/decisionrisk/runs`.
 - Added a backend runtime runner that writes replay/eval artifacts, routes a reduced one-run `live_smoke` through the existing MiroFish facade boundary when configured, writes substrate-only MiroFish report artifacts, and refuses to downgrade `live_full` before the live Verdict Council exists.
+- Added the deterministic Verdict Council service boundary with `VerdictCouncilRunner`, `ReportCritic`, `ClaimRefAuditor`, `VerdictGateEngine`, and `RiskDocketGenerator`.
+- Routed replay, eval, and reduced `live_smoke` final artifact generation through the Verdict Council so `council_rounds.json`, `verdict.json`, and `risk_docket.md` come from a shared service boundary.
+- Added minimal publish gates that reject MiroFish report substrate without council artifacts and require verdict rationale ClaimRefs to be supported or corroborated council judgments.
+- Updated domain language for Verdict Council, MiroFish report substrate, and `council_judgment`.
 
 ## Remaining Work
 
 - Push stacked branches and open PRs after GitHub authentication is repaired.
 - Use the created source-of-truth GitHub issues (#5 through #29) as the implementation backlog.
 - Complete production live MiroFish facade behavior for project, graph, simulation, report, and artifact operations beyond the reduced `live_smoke` runner path.
-- Implement the mandatory DecisionRisk verdict evaluation layer:
-  - Pipeline rule: `MiroFish run completes -> MiroFish report + traces + graph + metrics + grounding + ClaimRefs -> DecisionRisk VerdictCouncilRunner runs automatically -> verdict.json + council_rounds.json + risk_docket.md -> final user response`.
-  - Architectural invariant: no MiroFish report is user-final until it passes through the DecisionRisk Verdict Council.
-  - Required services: `VerdictCouncilRunner`, `ReportCritic`, `ClaimRefAuditor`, `VerdictGateEngine`, and `RiskDocketGenerator`.
-  - Required gates: `run_manifest.json` must include the MiroFish report artifact; MiroFish report claims must become ClaimRefs or be marked unsupported; `simulation_metrics.json`, `scenario_runs.json`, `grounding_report.json`, and the MiroFish report must all be loaded before final verdict; `verdict.primary_rationale` cannot be generated without non-unsupported ClaimRefs; final user response must come from `verdict.json` or `risk_docket.md`, never directly from MiroFish report text.
+- Expand the deterministic Verdict Council into live LLM role/model configuration under issue #9.
+- Harden ReportCritic, ClaimRefAuditor, and VerdictGateEngine behavior under issue #10, including deeper overclaim and missing-scenario warnings.
 - Wire the minimal Vue case viewer into navigation after product shell decisions.
 - Add frontend build verification once MiroFish frontend dependencies are installed.
 - Add full seven-step authoring UI after MVP.
@@ -75,6 +76,13 @@ This file is the live implementation tracker. Every task must update this file b
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed after runtime mode validation changes.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-runtime-eval --golden-dir outputs/ai_memory_launch` passed.
 - Focused backend runner tests passed for reduced `live_smoke` substrate artifacts and `live_full` no-downgrade behavior.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed after issue #8: 34 tests, 5 Flask route tests skipped because Flask is not installed in the active interpreter.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #8.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode replay --output-dir /private/tmp/decisionrisk-issue8-replay` passed.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate /private/tmp/decisionrisk-issue8-replay` passed.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode replay --output-dir outputs/ai_memory_launch` passed and refreshed the checked demo artifacts.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch` passed after refreshing the checked demo artifacts.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-issue8-eval --golden-dir outputs/ai_memory_launch` passed.
 - MiroFish subtree import completed successfully.
 - Demo guide was added; existing validation commands remain the same.
 
@@ -82,10 +90,10 @@ This file is the live implementation tracker. Every task must update this file b
 
 - The MiroFish source subtree import created standard subtree merge commits automatically.
 - Full live MiroFish/LLM execution is not yet implemented; replay and eval are implemented in the clean CLI, and backend `live_smoke` has a reduced one-run facade-backed path for configured environments/test doubles.
-- `live_full` intentionally fails unless live LLM preflight passes and then remains blocked until issue #8 implements the real Verdict Council pipeline; it does not silently fall back to replay.
+- `live_full` intentionally fails unless live LLM preflight passes and then remains blocked until issue #9 implements live Verdict Council role/model configuration; it does not silently fall back to replay.
 - Frontend route code was added but not build-tested because frontend dependencies were not installed in this turn.
 - The source-of-truth issue backlog is now remote, but local working tree updates are not committed.
 
 ## Next Task
 
-- Pick the next MVP blocker issue (#5, #7, #8, #10, #15, #20, #21, or #22) and implement it on a focused branch.
+- Pick the next MVP blocker issue (#5, #7, #9, #10, #15, #20, #21, or #22) and implement it on a focused branch.
