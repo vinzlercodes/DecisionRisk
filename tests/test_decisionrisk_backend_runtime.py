@@ -334,7 +334,7 @@ class DecisionRiskBackendRunnerTests(unittest.TestCase):
             self.assertIn("DECISIONRISK_ENABLE_LIVE_LLM=1", str(raised.exception))
             self.assertFalse((Path(tmp) / case["case_id"] / "run_manifest.json").exists())
 
-    def test_live_full_is_not_implemented_after_preflight_and_does_not_downgrade(self) -> None:
+    def test_live_full_provider_execution_is_not_implemented_after_preflight_and_does_not_downgrade(self) -> None:
         case = load_case(CASE_PATH)
         with tempfile.TemporaryDirectory() as tmp:
             runner = DecisionRiskRuntimeRunner(Path(tmp))
@@ -346,7 +346,7 @@ class DecisionRiskBackendRunnerTests(unittest.TestCase):
             with patch.dict(os.environ, env, clear=True):
                 with self.assertRaises(RuntimeError) as raised:
                     runner.run(case, "live_full")
-            self.assertIn("live_full requires live Verdict Council role and model configuration", str(raised.exception))
+            self.assertIn("live_full requires live Verdict Council provider execution", str(raised.exception))
             self.assertFalse((Path(tmp) / case["case_id"] / "run_manifest.json").exists())
 
 

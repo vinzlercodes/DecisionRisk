@@ -254,9 +254,9 @@ def simulation_metrics() -> dict[str, Any]:
 def council_rounds() -> dict[str, Any]:
     return {
         "rounds": [
-            {"round": 1, "name": "Independent analysis", "advisors": ["Growth Strategist", "Trust and Reputation Analyst", "Regulatory Analyst", "Competitor Strategist"], "claim_refs": ["claim_0001", "claim_0005"]},
+            {"round": 1, "name": "Independent analysis", "council_roles": ["Growth Strategist", "Trust and Reputation Analyst", "Regulatory Analyst", "Competitor Strategist"], "claim_refs": ["claim_0001", "claim_0005"]},
             {"round": 2, "name": "Anonymous peer review", "claim_refs": ["claim_0002", "claim_0003"]},
-            {"round": 3, "name": "Chair synthesis", "advisor": "Decision Chair", "claim_refs": ["claim_0001", "claim_0002", "claim_0004"]},
+            {"round": 3, "name": "Chair synthesis", "council_role": "Decision Chair", "claim_refs": ["claim_0001", "claim_0002", "claim_0004"]},
         ],
         "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
     }
