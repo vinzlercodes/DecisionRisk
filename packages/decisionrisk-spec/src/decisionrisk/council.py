@@ -7,6 +7,21 @@ from .artifacts import collect_claim_refs
 
 
 FINAL_VERDICTS = {"RECOMMEND", "DEFER", "NO_GO"}
+COUNCIL_MODEL_POLICIES = {"deterministic_or_logged"}
+REQUIRED_COUNCIL_ROLES = (
+    "growth_strategist",
+    "trust_reputation_analyst",
+    "regulatory_analyst",
+    "competitor_strategist",
+    "decision_chair",
+)
+SPECIALIST_COUNCIL_ROLES = REQUIRED_COUNCIL_ROLES[:-1]
+REQUIRED_COUNCIL_OUTPUTS = (
+    "claim_refs",
+    "confidence",
+    "dissent",
+    "mitigation_requirements",
+)
 REQUIRED_COUNCIL_INPUTS = {
     "decision_case",
     "grounding_report",
@@ -24,6 +39,218 @@ NON_MIROFISH_SOURCE_PREFIXES = (
     "scenario:",
     "simulation:",
 )
+
+
+@dataclass(frozen=True)
+class CouncilRoleSpec:
+    role_id: str
+    name: str
+    lens: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "role_id": self.role_id,
+            "name": self.name,
+            "lens": self.lens,
+        }
+
+
+@dataclass(frozen=True)
+class CouncilConfig:
+    risk_pack: str
+    model_policy: str
+    temperature: float
+    max_rounds: int
+    required_roles: tuple[str, ...]
+    required_outputs: tuple[str, ...]
+    role_specs: tuple[CouncilRoleSpec, ...]
+
+    def validate(self) -> None:
+        errors: list[str] = []
+        if self.model_policy not in COUNCIL_MODEL_POLICIES:
+            errors.append(f"unsupported council model_policy: {self.model_policy}")
+        if self.max_rounds < 3:
+            errors.append("council max_rounds must be at least 3")
+        if tuple(self.required_roles) != REQUIRED_COUNCIL_ROLES:
+            errors.append(f"council required_roles must be exactly {list(REQUIRED_COUNCIL_ROLES)}")
+        if tuple(self.required_outputs) != REQUIRED_COUNCIL_OUTPUTS:
+            errors.append(f"council required_outputs must be exactly {list(REQUIRED_COUNCIL_OUTPUTS)}")
+
+        role_ids = tuple(spec.role_id for spec in self.role_specs)
+        if role_ids != SPECIALIST_COUNCIL_ROLES:
+            errors.append(f"council role_specs must define specialist roles {list(SPECIALIST_COUNCIL_ROLES)}")
+
+        if errors:
+            raise ValueError("invalid council config: " + "; ".join(errors))
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "risk_pack": self.risk_pack,
+            "model_policy": self.model_policy,
+            "temperature": self.temperature,
+            "max_rounds": self.max_rounds,
+            "required_roles": list(self.required_roles),
+            "required_outputs": list(self.required_outputs),
+            "role_specs": [spec.as_dict() for spec in self.role_specs],
+        }
+
+
+def launch_risk_council_config() -> CouncilConfig:
+    return CouncilConfig(
+        risk_pack="launch_risk",
+        model_policy="deterministic_or_logged",
+        temperature=0.2,
+        max_rounds=3,
+        required_roles=REQUIRED_COUNCIL_ROLES,
+        required_outputs=REQUIRED_COUNCIL_OUTPUTS,
+        role_specs=(
+            CouncilRoleSpec(
+                "growth_strategist",
+                "Growth Strategist",
+                "Adoption, retention, learning velocity, and launch momentum.",
+            ),
+            CouncilRoleSpec(
+                "trust_reputation_analyst",
+                "Trust and Reputation Analyst",
+                "User trust, press framing, privacy perception, and brand damage.",
+            ),
+            CouncilRoleSpec(
+                "regulatory_analyst",
+                "Regulatory Analyst",
+                "Regulator attention, compliance risk, and public commitments.",
+            ),
+            CouncilRoleSpec(
+                "competitor_strategist",
+                "Competitor Strategist",
+                "Adversarial framing, attack surface, and market narrative.",
+            ),
+        ),
+    )
+
+
+@dataclass(frozen=True)
+class CouncilRoleInput:
+    role: CouncilRoleSpec
+    artifacts: dict[str, Any]
+    mode: str
+    council_config: CouncilConfig
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "role": self.role.as_dict(),
+            "mode": self.mode,
+            "council_config": self.council_config.as_dict(),
+            "artifact_names": sorted(self.artifacts.keys()),
+        }
+
+
+@dataclass(frozen=True)
+class CouncilRoleOutput:
+    role_id: str
+    role_name: str
+    analysis: str
+    claim_refs: list[str]
+    confidence: float
+    dissent: str
+    mitigation_requirements: list[str]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "role_id": self.role_id,
+            "role_name": self.role_name,
+            "analysis": self.analysis,
+            "claim_refs": self.claim_refs,
+            "confidence": self.confidence,
+            "dissent": self.dissent,
+            "mitigation_requirements": self.mitigation_requirements,
+        }
+
+
+@dataclass(frozen=True)
+class DecisionChairInput:
+    artifacts: dict[str, Any]
+    role_outputs: list[CouncilRoleOutput]
+    report_critique: dict[str, Any]
+    council_claim_refs: list[dict[str, Any]]
+    mode: str
+    council_config: CouncilConfig
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "mode": self.mode,
+            "council_config": self.council_config.as_dict(),
+            "role_outputs": [output.as_dict() for output in self.role_outputs],
+            "report_critique": self.report_critique,
+            "council_claim_refs": self.council_claim_refs,
+        }
+
+
+@dataclass(frozen=True)
+class DecisionChairOutput:
+    verdict_draft: str
+    rationale: str
+    final_verdict: str
+    recommended_option_id: str
+    risk_level: str
+    confidence: float
+    claim_refs: list[str]
+    mitigation_requirements: list[str]
+    strongest_dissent: str
+    what_would_change_the_verdict: list[str]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "verdict_draft": self.verdict_draft,
+            "rationale": self.rationale,
+            "final_verdict": self.final_verdict,
+            "recommended_option_id": self.recommended_option_id,
+            "risk_level": self.risk_level,
+            "confidence": self.confidence,
+            "claim_refs": self.claim_refs,
+            "mitigation_requirements": self.mitigation_requirements,
+            "strongest_dissent": self.strongest_dissent,
+            "what_would_change_the_verdict": self.what_would_change_the_verdict,
+        }
+
+    def verdict(self, mode: str) -> dict[str, Any]:
+        return {
+            "threshold_verdict": self.final_verdict,
+            "final_verdict": self.final_verdict,
+            "recommended_option_id": self.recommended_option_id,
+            "confidence": self.confidence,
+            "risk_level": self.risk_level,
+            "primary_rationale": self.rationale,
+            "primary_rationale_claim_refs": self.claim_refs,
+            "strongest_dissent": self.strongest_dissent,
+            "required_mitigations": self.mitigation_requirements,
+            "what_would_change_the_verdict": self.what_would_change_the_verdict,
+            "council_mode": mode,
+        }
+
+
+@dataclass(frozen=True)
+class CouncilExecutionPackage:
+    council_config: CouncilConfig
+    role_outputs: list[CouncilRoleOutput]
+    chair_output: DecisionChairOutput
+    report_critique: dict[str, Any]
+    claim_audit: dict[str, Any]
+    gate: GateResult
+    council_claim_refs: list[dict[str, Any]]
+    mode: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": "decisionrisk.council_execution.v1",
+            "mode": self.mode,
+            "council_config": self.council_config.as_dict(),
+            "role_outputs": [output.as_dict() for output in self.role_outputs],
+            "chair_output": self.chair_output.as_dict(),
+            "report_critique": self.report_critique,
+            "claim_support_map": self.claim_audit["claim_support_map"],
+            "gate": self.gate.as_dict(),
+            "claim_refs": self.council_claim_refs,
+        }
 
 
 @dataclass(frozen=True)
@@ -233,38 +460,136 @@ Material claims link to ClaimRefs in durable artifacts. Gate result: {gate.resul
 """
 
 
+class DeterministicCouncilRoleAgent:
+    """Deterministic role service used by replay, eval, and live_smoke."""
+
+    def __init__(self, role: CouncilRoleSpec) -> None:
+        self.role = role
+
+    def analyze(self, role_input: CouncilRoleInput) -> CouncilRoleOutput:
+        metrics = role_input.artifacts["simulation_metrics"]
+        confidence = min(float(metrics.get("ensemble", {}).get("evidence_confidence", 0.66)), 0.70)
+        return CouncilRoleOutput(
+            role_id=self.role.role_id,
+            role_name=self.role.name,
+            analysis=_role_analysis(self.role.role_id),
+            claim_refs=_role_claim_refs(self.role.role_id),
+            confidence=confidence,
+            dissent=_role_dissent(self.role.role_id),
+            mitigation_requirements=_role_mitigations(self.role.role_id),
+        )
+
+
+class DeterministicDecisionChair:
+    """Deterministic Chair service that synthesizes role outputs into a verdict draft."""
+
+    def synthesize(self, chair_input: DecisionChairInput) -> DecisionChairOutput:
+        metrics = chair_input.artifacts["simulation_metrics"]
+        options = metrics.get("options", {})
+        recommended_option_id = _lowest_risk_option(options) or "opt_in_beta"
+        confidence = min(float(metrics.get("ensemble", {}).get("evidence_confidence", 0.66)), 0.70)
+        strongest_dissent = _strongest_dissent(chair_input.role_outputs)
+        return DecisionChairOutput(
+            verdict_draft="RECOMMEND",
+            rationale="Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+            final_verdict="RECOMMEND",
+            recommended_option_id=recommended_option_id,
+            risk_level="medium",
+            confidence=confidence,
+            claim_refs=["claim_0001", "claim_0002", "claim_0004"],
+            mitigation_requirements=[
+                "Publish memory controls before launch",
+                "Expose deletion and temporary-use controls in onboarding",
+                "Prepare a privacy-focused press FAQ",
+            ],
+            strongest_dissent=strongest_dissent,
+            what_would_change_the_verdict=[
+                "Public evidence that users strongly prefer default-on memory",
+                "Beta telemetry showing low opt-out and low trust damage",
+            ],
+        )
+
+
 class VerdictCouncilRunner:
     """Deterministic Verdict Council pipeline for replay, eval, and live_smoke."""
 
     def __init__(
         self,
+        council_config: CouncilConfig | None = None,
+        role_agents: dict[str, DeterministicCouncilRoleAgent] | None = None,
+        decision_chair: DeterministicDecisionChair | None = None,
         report_critic: ReportCritic | None = None,
         claim_ref_auditor: ClaimRefAuditor | None = None,
         gate_engine: VerdictGateEngine | None = None,
         docket_generator: RiskDocketGenerator | None = None,
     ) -> None:
+        self.council_config = council_config or launch_risk_council_config()
+        self.role_agents = role_agents or {
+            spec.role_id: DeterministicCouncilRoleAgent(spec)
+            for spec in self.council_config.role_specs
+        }
+        self.decision_chair = decision_chair or DeterministicDecisionChair()
         self.report_critic = report_critic or ReportCritic()
         self.claim_ref_auditor = claim_ref_auditor or ClaimRefAuditor()
         self.gate_engine = gate_engine or VerdictGateEngine()
         self.docket_generator = docket_generator or RiskDocketGenerator()
 
     def run(self, artifacts: dict[str, Any], mode: str) -> dict[str, Any]:
+        self.council_config.validate()
         council_mode = _council_artifact_mode(mode)
         report_critique = self.report_critic.review(artifacts)
         council_claim_refs = self._council_claim_refs(artifacts, council_mode)
-        claim_audit = self.claim_ref_auditor.audit(artifacts, council_claim_refs)
-        verdict = self._verdict(artifacts, council_mode)
+        role_outputs = self._role_outputs(artifacts, council_mode)
+        chair_output = self.decision_chair.synthesize(
+            DecisionChairInput(
+                artifacts=artifacts,
+                role_outputs=role_outputs,
+                report_critique=report_critique,
+                council_claim_refs=council_claim_refs,
+                mode=council_mode,
+                council_config=self.council_config,
+            )
+        )
+        verdict = chair_output.verdict(council_mode)
         claim_audit = self.claim_ref_auditor.audit({**artifacts, "verdict": verdict}, council_claim_refs)
         gate = self.gate_engine.evaluate(artifacts, verdict, claim_audit, report_critique)
         if gate.errors:
             raise ValueError("Verdict Council gate blocked finalization: " + "; ".join(gate.errors))
-        council_rounds = self._council_rounds(artifacts, council_mode, council_claim_refs, report_critique, claim_audit, gate)
+        execution_package = CouncilExecutionPackage(
+            council_config=self.council_config,
+            role_outputs=role_outputs,
+            chair_output=chair_output,
+            report_critique=report_critique,
+            claim_audit=claim_audit,
+            gate=gate,
+            council_claim_refs=council_claim_refs,
+            mode=council_mode,
+        )
+        council_rounds = self._council_rounds(execution_package)
         risk_docket = self.docket_generator.generate(artifacts, council_rounds, verdict, gate)
         return {
             "council_rounds": council_rounds,
             "verdict": verdict,
             "risk_docket": risk_docket,
         }
+
+    def _role_outputs(self, artifacts: dict[str, Any], mode: str) -> list[CouncilRoleOutput]:
+        outputs: list[CouncilRoleOutput] = []
+        for spec in self.council_config.role_specs:
+            agent = self.role_agents.get(spec.role_id)
+            if agent is None:
+                raise ValueError(f"missing council role agent: {spec.role_id}")
+            outputs.append(
+                agent.analyze(
+                    CouncilRoleInput(
+                        role=spec,
+                        artifacts=artifacts,
+                        mode=mode,
+                        council_config=self.council_config,
+                    )
+                )
+            )
+        return outputs
 
     def _council_claim_refs(self, artifacts: dict[str, Any], mode: str) -> list[dict[str, Any]]:
         if "mirofish_report_claims" not in artifacts:
@@ -292,72 +617,44 @@ class VerdictCouncilRunner:
             }
         ]
 
-    def _council_rounds(
-        self,
-        artifacts: dict[str, Any],
-        mode: str,
-        council_claim_refs: list[dict[str, Any]],
-        report_critique: dict[str, Any],
-        claim_audit: dict[str, Any],
-        gate: GateResult,
-    ) -> dict[str, Any]:
+    def _council_rounds(self, execution_package: CouncilExecutionPackage) -> dict[str, Any]:
+        package = execution_package.as_dict()
         return {
             "schema_version": "decisionrisk.council_rounds.v1",
-            "mode": mode,
+            "mode": execution_package.mode,
+            "council_config": package["council_config"],
+            "role_outputs": package["role_outputs"],
+            "chair_output": package["chair_output"],
+            "gate": package["gate"],
+            "confidence": execution_package.chair_output.confidence,
+            "dissent": execution_package.chair_output.strongest_dissent,
+            "mitigation_requirements": execution_package.chair_output.mitigation_requirements,
             "rounds": [
                 {
                     "round": 1,
                     "name": "Independent analysis",
-                    "advisors": [
-                        "Growth Strategist",
-                        "Trust and Reputation Analyst",
-                        "Regulatory Analyst",
-                        "Competitor Strategist",
-                    ],
-                    "claim_refs": ["claim_0001", "claim_0005"],
+                    "council_roles": [output.role_name for output in execution_package.role_outputs],
+                    "role_outputs": package["role_outputs"],
+                    "claim_refs": _unique_claim_refs(execution_package.role_outputs),
                 },
                 {
                     "round": 2,
                     "name": "Report critique and ClaimRef audit",
-                    "claim_refs": ["claim_0002", "claim_0003"] + [claim["claim_id"] for claim in council_claim_refs],
-                    "report_critique": report_critique,
-                    "claim_support_map": claim_audit["claim_support_map"],
+                    "claim_refs": ["claim_0002", "claim_0003"] + [claim["claim_id"] for claim in execution_package.council_claim_refs],
+                    "report_critique": execution_package.report_critique,
+                    "claim_support_map": execution_package.claim_audit["claim_support_map"],
                 },
                 {
                     "round": 3,
                     "name": "Chair synthesis",
-                    "advisor": "Decision Chair",
-                    "claim_refs": ["claim_0001", "claim_0002", "claim_0004"],
-                    "gate": gate.as_dict(),
+                    "council_role": "Decision Chair",
+                    "chair_output": execution_package.chair_output.as_dict(),
+                    "claim_refs": execution_package.chair_output.claim_refs,
+                    "gate": execution_package.gate.as_dict(),
                 },
             ],
-            "claim_refs": council_claim_refs,
-            "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
-        }
-
-    def _verdict(self, artifacts: dict[str, Any], mode: str) -> dict[str, Any]:
-        metrics = artifacts["simulation_metrics"]
-        options = metrics.get("options", {})
-        recommended_option_id = _lowest_risk_option(options) or "opt_in_beta"
-        return {
-            "threshold_verdict": "RECOMMEND",
-            "final_verdict": "RECOMMEND",
-            "recommended_option_id": recommended_option_id,
-            "confidence": min(float(metrics.get("ensemble", {}).get("evidence_confidence", 0.66)), 0.70),
-            "risk_level": "medium",
-            "primary_rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
-            "primary_rationale_claim_refs": ["claim_0001", "claim_0002", "claim_0004"],
-            "strongest_dissent": "Default-on may accelerate adoption if the company can prove controls are clear before launch.",
-            "required_mitigations": [
-                "Publish memory controls before launch",
-                "Expose deletion and temporary-use controls in onboarding",
-                "Prepare a privacy-focused press FAQ",
-            ],
-            "what_would_change_the_verdict": [
-                "Public evidence that users strongly prefer default-on memory",
-                "Beta telemetry showing low opt-out and low trust damage",
-            ],
-            "council_mode": mode,
+            "claim_refs": execution_package.council_claim_refs,
+            "strongest_dissent": execution_package.chair_output.strongest_dissent,
         }
 
 
@@ -405,6 +702,64 @@ def _has_mirofish_report_source(source_refs: list[str]) -> bool:
 
 def _has_non_mirofish_source(source_refs: list[str]) -> bool:
     return any(ref.startswith(NON_MIROFISH_SOURCE_PREFIXES) and "mirofish_report" not in ref for ref in source_refs)
+
+
+def _role_analysis(role_id: str) -> str:
+    analyses = {
+        "growth_strategist": "Opt-in beta preserves learning velocity while avoiding the adoption-at-all-costs risk of default-on launch.",
+        "trust_reputation_analyst": "Default-on memory creates avoidable trust and press-framing risk; explicit controls are required before broader launch.",
+        "regulatory_analyst": "The lower-risk path is a constrained launch with visible commitments, deletion controls, and enough telemetry to close evidence gaps.",
+        "competitor_strategist": "Competitors can attack default-on memory as careless handling of personal context; opt-in beta reduces that attack surface.",
+    }
+    return analyses[role_id]
+
+
+def _role_claim_refs(role_id: str) -> list[str]:
+    claim_refs = {
+        "growth_strategist": ["claim_0002", "claim_0005"],
+        "trust_reputation_analyst": ["claim_0001", "claim_0003", "claim_0004"],
+        "regulatory_analyst": ["claim_0004", "claim_0007"],
+        "competitor_strategist": ["claim_0003", "claim_0006"],
+    }
+    return claim_refs[role_id]
+
+
+def _role_dissent(role_id: str) -> str:
+    dissents = {
+        "growth_strategist": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+        "trust_reputation_analyst": "Enterprise-only launch may be safer for reputation but delays consumer learning.",
+        "regulatory_analyst": "A public launch could become acceptable if evidence closes consent and deletion-control gaps before release.",
+        "competitor_strategist": "Competitor attack risk may be tolerable if the company preempts the narrative with strong user-control proof.",
+    }
+    return dissents[role_id]
+
+
+def _role_mitigations(role_id: str) -> list[str]:
+    mitigations = {
+        "growth_strategist": ["Run an opt-in beta before wider launch"],
+        "trust_reputation_analyst": ["Publish memory controls before launch", "Prepare a privacy-focused press FAQ"],
+        "regulatory_analyst": ["Expose deletion and temporary-use controls in onboarding"],
+        "competitor_strategist": ["Pre-brief competitive narrative risks with evidence-backed control messaging"],
+    }
+    return mitigations[role_id]
+
+
+def _strongest_dissent(role_outputs: list[CouncilRoleOutput]) -> str:
+    for output in role_outputs:
+        if output.role_id == "growth_strategist":
+            return output.dissent
+    if role_outputs:
+        return role_outputs[0].dissent
+    return "No dissent recorded."
+
+
+def _unique_claim_refs(role_outputs: list[CouncilRoleOutput]) -> list[str]:
+    refs: list[str] = []
+    for output in role_outputs:
+        for claim_ref in output.claim_refs:
+            if claim_ref not in refs:
+                refs.append(claim_ref)
+    return refs
 
 
 def _sentence_list(items: list[str]) -> str:

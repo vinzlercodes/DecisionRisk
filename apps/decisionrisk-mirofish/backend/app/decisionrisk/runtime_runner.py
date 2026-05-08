@@ -88,7 +88,7 @@ class DecisionRiskRuntimeRunner:
             output_dir = self._run_live_smoke(decision_case, output_dir=output_dir)
         else:
             raise RuntimeNotImplementedError(
-                "live_full requires live Verdict Council role and model configuration from issue #9 and is not downgraded to replay."
+                "live_full requires live Verdict Council provider execution, which is not implemented yet, and is not downgraded to replay."
             )
 
         errors = validate_output_dir(output_dir)
