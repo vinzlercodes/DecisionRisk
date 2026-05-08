@@ -1,5 +1,6 @@
 {
   "confidence": 0.66,
+  "council_mode": "deterministic_replay",
   "final_verdict": "RECOMMEND",
   "primary_rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
   "primary_rationale_claim_refs": [

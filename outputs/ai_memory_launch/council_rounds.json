@@ -1,4 +1,6 @@
 {
+  "claim_refs": [],
+  "mode": "deterministic_replay",
   "rounds": [
     {
       "advisors": [
@@ -19,7 +21,79 @@
         "claim_0002",
         "claim_0003"
       ],
-      "name": "Anonymous peer review",
+      "claim_support_map": {
+        "claim_0001": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "evidence:public_privacy_concerns_summary",
+            "evidence:privacy_faq_draft"
+          ],
+          "status": "source_observed"
+        },
+        "claim_0002": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "evidence:launch_memo",
+            "graph:launch_risk"
+          ],
+          "status": "graph_inferred"
+        },
+        "claim_0003": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "run:privacy_backlash_seed_2"
+          ],
+          "status": "simulation_observed"
+        },
+        "claim_0004": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "evidence:openai_memory_controls_summary",
+            "evidence:privacy_faq_draft"
+          ],
+          "status": "web_verified"
+        },
+        "claim_0005": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": false,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "council:growth_strategist",
+            "council:trust_reputation_analyst"
+          ],
+          "status": "council_judgment"
+        },
+        "claim_0006": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "run:competitor_attack_seed_1"
+          ],
+          "status": "simulation_observed"
+        },
+        "claim_0007": {
+          "has_mirofish_report_source": false,
+          "has_non_mirofish_source": false,
+          "primary_rationale_eligible": false,
+          "source_refs": [],
+          "status": "unsupported_assumption"
+        }
+      },
+      "name": "Report critique and ClaimRef audit",
+      "report_critique": {
+        "substrate_present": false,
+        "unsupported_claim_ids": [],
+        "warnings": []
+      },
       "round": 2
     },
     {
@@ -29,9 +103,15 @@
         "claim_0002",
         "claim_0004"
       ],
+      "gate": {
+        "errors": [],
+        "result": "pass",
+        "warnings": []
+      },
       "name": "Chair synthesis",
       "round": 3
     }
   ],
+  "schema_version": "decisionrisk.council_rounds.v1",
   "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust."
 }
