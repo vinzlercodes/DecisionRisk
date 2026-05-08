@@ -2,7 +2,7 @@
   "artifacts": {
     "council_rounds": {
       "path": "council_rounds.json",
-      "sha256": "9cbf3e09561d3f20f3df641830111d49e7ec265659db3603d80f884e2eeee9d0"
+      "sha256": "be8ad82a3500c8853729533192f3637c5dfee2c8e7d9d097187215897f234bb0"
     },
     "decision_case": {
       "path": "decision_case.json",
@@ -18,7 +18,7 @@
     },
     "risk_docket": {
       "path": "risk_docket.md",
-      "sha256": "82877d79570df6a1ad56a8e3eac6aff3ca52a32be79da82d5b7744655aa49546"
+      "sha256": "9e54e7f6b6cf0b2be73e36fc18b3c47a3555e43c4602358e6f019de2da12049e"
     },
     "risk_graph": {
       "path": "risk_graph.json",
@@ -38,11 +38,11 @@
     },
     "verdict": {
       "path": "verdict.json",
-      "sha256": "f7861617c62e187060f8f0f5403fddb831cfa34f4498fda9a188a50327d8b051"
+      "sha256": "4d19dbe9b05cbde11acc683369fe11314cdc653ded07192005a81c313a00f7ce"
     }
   },
   "case_id": "ai_memory_launch",
-  "created_at": "2026-05-08T05:07:31.152622+00:00",
+  "created_at": "2026-05-08T17:22:54.761405+00:00",
   "decisionrisk_version": "0.1.0",
   "inputs": {
     "case_yaml": {

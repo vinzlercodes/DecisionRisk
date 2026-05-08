@@ -1,19 +1,220 @@
 {
+  "chair_output": {
+    "claim_refs": [
+      "claim_0001",
+      "claim_0002",
+      "claim_0004"
+    ],
+    "confidence": 0.66,
+    "final_verdict": "RECOMMEND",
+    "mitigation_requirements": [
+      "Publish memory controls before launch",
+      "Expose deletion and temporary-use controls in onboarding",
+      "Prepare a privacy-focused press FAQ"
+    ],
+    "rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+    "recommended_option_id": "opt_in_beta",
+    "risk_level": "medium",
+    "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+    "verdict_draft": "RECOMMEND",
+    "what_would_change_the_verdict": [
+      "Public evidence that users strongly prefer default-on memory",
+      "Beta telemetry showing low opt-out and low trust damage"
+    ]
+  },
   "claim_refs": [],
+  "confidence": 0.66,
+  "council_config": {
+    "max_rounds": 3,
+    "model_policy": "deterministic_or_logged",
+    "required_outputs": [
+      "claim_refs",
+      "confidence",
+      "dissent",
+      "mitigation_requirements"
+    ],
+    "required_roles": [
+      "growth_strategist",
+      "trust_reputation_analyst",
+      "regulatory_analyst",
+      "competitor_strategist",
+      "decision_chair"
+    ],
+    "risk_pack": "launch_risk",
+    "role_specs": [
+      {
+        "lens": "Adoption, retention, learning velocity, and launch momentum.",
+        "name": "Growth Strategist",
+        "role_id": "growth_strategist"
+      },
+      {
+        "lens": "User trust, press framing, privacy perception, and brand damage.",
+        "name": "Trust and Reputation Analyst",
+        "role_id": "trust_reputation_analyst"
+      },
+      {
+        "lens": "Regulator attention, compliance risk, and public commitments.",
+        "name": "Regulatory Analyst",
+        "role_id": "regulatory_analyst"
+      },
+      {
+        "lens": "Adversarial framing, attack surface, and market narrative.",
+        "name": "Competitor Strategist",
+        "role_id": "competitor_strategist"
+      }
+    ],
+    "temperature": 0.2
+  },
+  "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+  "gate": {
+    "errors": [],
+    "result": "pass",
+    "warnings": []
+  },
+  "mitigation_requirements": [
+    "Publish memory controls before launch",
+    "Expose deletion and temporary-use controls in onboarding",
+    "Prepare a privacy-focused press FAQ"
+  ],
   "mode": "deterministic_replay",
+  "role_outputs": [
+    {
+      "analysis": "Opt-in beta preserves learning velocity while avoiding the adoption-at-all-costs risk of default-on launch.",
+      "claim_refs": [
+        "claim_0002",
+        "claim_0005"
+      ],
+      "confidence": 0.66,
+      "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+      "mitigation_requirements": [
+        "Run an opt-in beta before wider launch"
+      ],
+      "role_id": "growth_strategist",
+      "role_name": "Growth Strategist"
+    },
+    {
+      "analysis": "Default-on memory creates avoidable trust and press-framing risk; explicit controls are required before broader launch.",
+      "claim_refs": [
+        "claim_0001",
+        "claim_0003",
+        "claim_0004"
+      ],
+      "confidence": 0.66,
+      "dissent": "Enterprise-only launch may be safer for reputation but delays consumer learning.",
+      "mitigation_requirements": [
+        "Publish memory controls before launch",
+        "Prepare a privacy-focused press FAQ"
+      ],
+      "role_id": "trust_reputation_analyst",
+      "role_name": "Trust and Reputation Analyst"
+    },
+    {
+      "analysis": "The lower-risk path is a constrained launch with visible commitments, deletion controls, and enough telemetry to close evidence gaps.",
+      "claim_refs": [
+        "claim_0004",
+        "claim_0007"
+      ],
+      "confidence": 0.66,
+      "dissent": "A public launch could become acceptable if evidence closes consent and deletion-control gaps before release.",
+      "mitigation_requirements": [
+        "Expose deletion and temporary-use controls in onboarding"
+      ],
+      "role_id": "regulatory_analyst",
+      "role_name": "Regulatory Analyst"
+    },
+    {
+      "analysis": "Competitors can attack default-on memory as careless handling of personal context; opt-in beta reduces that attack surface.",
+      "claim_refs": [
+        "claim_0003",
+        "claim_0006"
+      ],
+      "confidence": 0.66,
+      "dissent": "Competitor attack risk may be tolerable if the company preempts the narrative with strong user-control proof.",
+      "mitigation_requirements": [
+        "Pre-brief competitive narrative risks with evidence-backed control messaging"
+      ],
+      "role_id": "competitor_strategist",
+      "role_name": "Competitor Strategist"
+    }
+  ],
   "rounds": [
     {
-      "advisors": [
+      "claim_refs": [
+        "claim_0002",
+        "claim_0005",
+        "claim_0001",
+        "claim_0003",
+        "claim_0004",
+        "claim_0007",
+        "claim_0006"
+      ],
+      "council_roles": [
         "Growth Strategist",
         "Trust and Reputation Analyst",
         "Regulatory Analyst",
         "Competitor Strategist"
       ],
-      "claim_refs": [
-        "claim_0001",
-        "claim_0005"
-      ],
       "name": "Independent analysis",
+      "role_outputs": [
+        {
+          "analysis": "Opt-in beta preserves learning velocity while avoiding the adoption-at-all-costs risk of default-on launch.",
+          "claim_refs": [
+            "claim_0002",
+            "claim_0005"
+          ],
+          "confidence": 0.66,
+          "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+          "mitigation_requirements": [
+            "Run an opt-in beta before wider launch"
+          ],
+          "role_id": "growth_strategist",
+          "role_name": "Growth Strategist"
+        },
+        {
+          "analysis": "Default-on memory creates avoidable trust and press-framing risk; explicit controls are required before broader launch.",
+          "claim_refs": [
+            "claim_0001",
+            "claim_0003",
+            "claim_0004"
+          ],
+          "confidence": 0.66,
+          "dissent": "Enterprise-only launch may be safer for reputation but delays consumer learning.",
+          "mitigation_requirements": [
+            "Publish memory controls before launch",
+            "Prepare a privacy-focused press FAQ"
+          ],
+          "role_id": "trust_reputation_analyst",
+          "role_name": "Trust and Reputation Analyst"
+        },
+        {
+          "analysis": "The lower-risk path is a constrained launch with visible commitments, deletion controls, and enough telemetry to close evidence gaps.",
+          "claim_refs": [
+            "claim_0004",
+            "claim_0007"
+          ],
+          "confidence": 0.66,
+          "dissent": "A public launch could become acceptable if evidence closes consent and deletion-control gaps before release.",
+          "mitigation_requirements": [
+            "Expose deletion and temporary-use controls in onboarding"
+          ],
+          "role_id": "regulatory_analyst",
+          "role_name": "Regulatory Analyst"
+        },
+        {
+          "analysis": "Competitors can attack default-on memory as careless handling of personal context; opt-in beta reduces that attack surface.",
+          "claim_refs": [
+            "claim_0003",
+            "claim_0006"
+          ],
+          "confidence": 0.66,
+          "dissent": "Competitor attack risk may be tolerable if the company preempts the narrative with strong user-control proof.",
+          "mitigation_requirements": [
+            "Pre-brief competitive narrative risks with evidence-backed control messaging"
+          ],
+          "role_id": "competitor_strategist",
+          "role_name": "Competitor Strategist"
+        }
+      ],
       "round": 1
     },
     {
@@ -97,12 +298,35 @@
       "round": 2
     },
     {
-      "advisor": "Decision Chair",
+      "chair_output": {
+        "claim_refs": [
+          "claim_0001",
+          "claim_0002",
+          "claim_0004"
+        ],
+        "confidence": 0.66,
+        "final_verdict": "RECOMMEND",
+        "mitigation_requirements": [
+          "Publish memory controls before launch",
+          "Expose deletion and temporary-use controls in onboarding",
+          "Prepare a privacy-focused press FAQ"
+        ],
+        "rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+        "recommended_option_id": "opt_in_beta",
+        "risk_level": "medium",
+        "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+        "verdict_draft": "RECOMMEND",
+        "what_would_change_the_verdict": [
+          "Public evidence that users strongly prefer default-on memory",
+          "Beta telemetry showing low opt-out and low trust damage"
+        ]
+      },
       "claim_refs": [
         "claim_0001",
         "claim_0002",
         "claim_0004"
       ],
+      "council_role": "Decision Chair",
       "gate": {
         "errors": [],
         "result": "pass",

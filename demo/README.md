@@ -9,8 +9,9 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - Read-only DecisionRisk artifact APIs and Vue routes inside the MiroFish app.
 - Canonical runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
 - Deterministic Verdict Council pipeline for replay, eval, and reduced `live_smoke`.
+- Risk Pack-owned Verdict Council role config and auditable council role output contracts.
 
-Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; `live_smoke` now writes raw MiroFish report substrate before the deterministic Verdict Council produces final artifacts. Robust live role/model configuration remains follow-up work.
+Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; `live_smoke` now writes raw MiroFish report substrate before the deterministic Verdict Council produces final artifacts. Live provider-backed council execution remains follow-up work.
 
 ## Prerequisites
 
@@ -187,6 +188,21 @@ What to point out:
 - The executive recommendation cites ClaimRefs.
 - It preserves the strongest dissent.
 - It includes mitigation and monitoring sections.
+
+## 6a. Inspect Council Role Contracts
+
+Open:
+
+```bash
+sed -n '1,220p' outputs/ai_memory_launch/council_rounds.json
+```
+
+What to point out:
+
+- `council_config` records the LaunchRisk model policy, temperature, max rounds, required roles, and required outputs.
+- `role_outputs` contains the growth, trust and reputation, regulatory, and competitor strategy lenses.
+- Every council role output includes ClaimRefs, confidence, dissent, and mitigation requirements.
+- `chair_output` contains the verdict draft, rationale, mitigations, strongest dissent, confidence, and ClaimRefs.
 
 ## 7. Run the Automated Tests
 
