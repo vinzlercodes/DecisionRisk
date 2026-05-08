@@ -17,8 +17,12 @@ from .runtime_modes import assert_runtime_mode_available, parse_runtime_mode
 from decisionrisk import __version__
 from decisionrisk.artifacts import ArtifactStore, read_json, write_json
 from decisionrisk.cli import validate_output_dir
-from decisionrisk.fixtures import artifact_payloads, risk_docket_markdown
+from decisionrisk.council import VerdictCouncilRunner
+from decisionrisk.fixtures import artifact_payloads
 from decisionrisk.safety import assess_case
+
+
+COUNCIL_OUTPUT_ARTIFACTS = {"council_rounds", "verdict"}
 
 
 class DecisionRiskRuntimeRunner:
@@ -84,7 +88,7 @@ class DecisionRiskRuntimeRunner:
             output_dir = self._run_live_smoke(decision_case, output_dir=output_dir)
         else:
             raise RuntimeNotImplementedError(
-                "live_full requires the live Verdict Council pipeline from issue #8 and is not downgraded to replay."
+                "live_full requires live Verdict Council role and model configuration from issue #9 and is not downgraded to replay."
             )
 
         errors = validate_output_dir(output_dir)
@@ -143,6 +147,7 @@ class DecisionRiskRuntimeRunner:
             "live_smoke",
             mirofish_ref=base_project.project_id,
             output_dir=output_dir,
+            include_council=False,
         )
         store = ArtifactStore(output_dir)
         live_scenario_runs = {
@@ -182,6 +187,8 @@ class DecisionRiskRuntimeRunner:
         manifest["artifacts"]["simulation_metrics"] = store.write_json_artifact("simulation_metrics", live_metrics).as_dict()
         for name, ref in substrate_refs.items():
             manifest["artifacts"][name] = ref.as_manifest_ref()
+        council_inputs = self._load_council_inputs(output_dir, manifest["artifacts"])
+        self._write_council_outputs(store, manifest["artifacts"], council_inputs, "live_smoke")
         manifest["live_runtime"] = {
             "base_project": base_project.to_dict(),
             "graph": graph_ref.to_dict(),
@@ -199,6 +206,7 @@ class DecisionRiskRuntimeRunner:
         mode: str,
         mirofish_ref: str = "not_used_clean_spec_runtime",
         output_dir: Path | None = None,
+        include_council: bool = True,
     ) -> Path:
         output_dir = output_dir or self.outputs_root / str(decision_case["case_id"])
         store = ArtifactStore(output_dir)
@@ -209,9 +217,11 @@ class DecisionRiskRuntimeRunner:
 
         artifact_refs: dict[str, dict[str, str]] = {}
         payloads = artifact_payloads(decision_case)
-        for name, payload in payloads.items():
+        council_inputs = {name: payload for name, payload in payloads.items() if name not in COUNCIL_OUTPUT_ARTIFACTS}
+        for name, payload in council_inputs.items():
             artifact_refs[name] = store.write_json_artifact(name, payload).as_dict()
-        artifact_refs["risk_docket"] = store.write_text_artifact("risk_docket.md", risk_docket_markdown()).as_dict()
+        if include_council:
+            self._write_council_outputs(store, artifact_refs, council_inputs, mode)
         input_refs["evidence_manifest"] = artifact_refs["evidence_manifest"]
         input_refs["scenario_design"] = artifact_refs["scenario_design"]
 
@@ -227,6 +237,35 @@ class DecisionRiskRuntimeRunner:
         }
         write_json(output_dir / "run_manifest.json", manifest)
         return output_dir
+
+    def _write_council_outputs(
+        self,
+        store: ArtifactStore,
+        artifact_refs: dict[str, dict[str, str]],
+        council_inputs: dict[str, Any],
+        mode: str,
+    ) -> None:
+        council_outputs = VerdictCouncilRunner().run(council_inputs, mode=mode)
+        artifact_refs["council_rounds"] = store.write_json_artifact(
+            "council_rounds",
+            council_outputs["council_rounds"],
+        ).as_dict()
+        artifact_refs["verdict"] = store.write_json_artifact("verdict", council_outputs["verdict"]).as_dict()
+        artifact_refs["risk_docket"] = store.write_text_artifact(
+            "risk_docket.md",
+            council_outputs["risk_docket"],
+        ).as_dict()
+
+    def _load_council_inputs(self, output_dir: Path, artifact_refs: dict[str, dict[str, str]]) -> dict[str, Any]:
+        store = ArtifactStore(output_dir)
+        inputs: dict[str, Any] = {}
+        for name, ref in artifact_refs.items():
+            if name in {"council_rounds", "verdict", "risk_docket"}:
+                continue
+            path = store.resolve(ref)
+            if path.suffix == ".json" and path.exists():
+                inputs[name] = read_json(path)
+        return inputs
 
 
 class RuntimePreflightError(RuntimeError):

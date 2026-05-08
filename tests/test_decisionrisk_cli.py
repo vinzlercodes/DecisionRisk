@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from decisionrisk.artifacts import load_case, read_json
+from decisionrisk.artifacts import load_case, read_json, write_json
 from decisionrisk.safety import assess_case
 
 
@@ -105,6 +105,28 @@ class DecisionRiskCliTests(unittest.TestCase):
             validate_result = run_cli("validate", str(output_dir))
             self.assertEqual(validate_result.returncode, 0, validate_result.stderr)
             self.assertIn("validated", validate_result.stdout)
+
+    def test_mirofish_substrate_without_council_artifacts_is_not_final(self) -> None:
+        from decisionrisk.cli import validate_output_dir
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "ai_memory_launch"
+            run_result = run_cli("run", str(CASE), "--mode", "replay", "--output-dir", str(output_dir))
+            self.assertEqual(run_result.returncode, 0, run_result.stderr)
+
+            (output_dir / "mirofish_report.json").write_text('{"substrate_only": true}\n', encoding="utf-8")
+            manifest = read_json(output_dir / "run_manifest.json")
+            manifest["artifacts"]["mirofish_report"] = {
+                "path": "mirofish_report.json",
+                "sha256": "bad_hash_for_validator_regression",
+            }
+            for name in ("council_rounds", "verdict", "risk_docket"):
+                manifest["artifacts"].pop(name, None)
+            write_json(output_dir / "run_manifest.json", manifest)
+
+            errors = validate_output_dir(output_dir)
+
+            self.assertTrue(any("MiroFish report substrate is not final" in error for error in errors))
 
     def test_verdict_primary_rationale_has_supported_claim(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
