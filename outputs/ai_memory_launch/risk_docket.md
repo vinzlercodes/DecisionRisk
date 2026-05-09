@@ -32,7 +32,7 @@ The Verdict Council ran 3 deterministic rounds and preserved dissent before chai
 
 ## Strongest Dissent
 
-Default-on may accelerate adoption if the company can prove controls are clear before launch.
+Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.
 
 ## Final Recommendation
 

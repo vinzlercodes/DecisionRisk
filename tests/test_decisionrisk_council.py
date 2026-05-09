@@ -25,6 +25,7 @@ from decisionrisk.council import (  # noqa: E402
 )
 from decisionrisk.fixtures import artifact_payloads  # noqa: E402
 from decisionrisk.artifacts import load_case  # noqa: E402
+from decisionrisk.report_substrate import normalize_report_to_claims, replay_report_payload  # noqa: E402
 
 
 CASE_PATH = ROOT / "examples" / "launch_risk" / "ai_memory_launch" / "case.yaml"
@@ -32,7 +33,12 @@ CASE_PATH = ROOT / "examples" / "launch_risk" / "ai_memory_launch" / "case.yaml"
 
 def base_council_inputs() -> dict:
     payloads = artifact_payloads(load_case(CASE_PATH))
-    return {name: payload for name, payload in payloads.items() if name not in {"council_rounds", "verdict"}}
+    artifacts = {name: payload for name, payload in payloads.items() if name not in {"council_rounds", "verdict"}}
+    report = replay_report_payload(artifacts, "replay")
+    artifacts["mirofish_report"] = report
+    artifacts["mirofish_report_markdown"] = report["markdown_content"]
+    artifacts["mirofish_report_claims"] = normalize_report_to_claims(report)
+    return artifacts
 
 
 class DecisionRiskCouncilTests(unittest.TestCase):
@@ -110,8 +116,12 @@ class DecisionRiskCouncilTests(unittest.TestCase):
             "claim_refs": [
                 {
                     "claim_id": "mirofish_claim_0001",
+                    "claim_type": "report_substrate",
                     "status": "unsupported_assumption",
                     "text": "Raw report claim.",
+                    "source_refs": ["artifact:mirofish_report.md"],
+                    "confidence": 0.2,
+                    "used_in": ["mirofish_report_substrate"],
                 }
             ]
         }
@@ -120,6 +130,115 @@ class DecisionRiskCouncilTests(unittest.TestCase):
 
         self.assertTrue(critique["substrate_present"])
         self.assertEqual(critique["unsupported_claim_ids"], ["mirofish_claim_0001"])
+
+    def test_report_critic_flags_malformed_report_claims(self) -> None:
+        artifacts = base_council_inputs()
+        artifacts["mirofish_report_claims"] = {
+            "claim_refs": [
+                {
+                    "claim_id": "mirofish_claim_bad",
+                    "status": "source_observed",
+                    "text": "Malformed report claim without provenance fields.",
+                }
+            ]
+        }
+
+        critique = ReportCritic().review(artifacts)
+
+        self.assertEqual(critique["malformed_claim_ids"], ["mirofish_claim_bad"])
+
+    def test_report_critic_warns_on_overclaims_without_blocking_non_final_claims(self) -> None:
+        artifacts = base_council_inputs()
+        artifacts["mirofish_report_claims"] = {
+            "claim_refs": [
+                {
+                    "claim_id": "mirofish_claim_over",
+                    "claim_type": "report_substrate",
+                    "status": "source_observed",
+                    "text": "This report proves the launch has no material risk.",
+                    "source_refs": ["artifact:mirofish_report.md", "metrics:simulation_metrics.overall_risk_score"],
+                    "confidence": 0.7,
+                    "used_in": ["mirofish_report_substrate"],
+                }
+            ]
+        }
+
+        critique = ReportCritic().review(artifacts)
+        verdict = {
+            "final_verdict": "RECOMMEND",
+            "primary_rationale_claim_refs": ["claim_0001"],
+        }
+        audit = ClaimRefAuditor().audit({**artifacts, "verdict": verdict})
+        gate = VerdictGateEngine().evaluate(artifacts, verdict, audit, critique)
+
+        self.assertEqual(critique["overclaim_claim_ids"], ["mirofish_claim_over"])
+        self.assertEqual(gate.result, "pass")
+
+    def test_gate_blocks_overclaimed_report_claim_in_primary_rationale(self) -> None:
+        artifacts = base_council_inputs()
+        report_claim = {
+            "claim_id": "mirofish_claim_over",
+            "claim_type": "report_substrate",
+            "status": "source_observed",
+            "text": "This report proves the launch has no material risk.",
+            "source_refs": ["artifact:mirofish_report.md", "metrics:simulation_metrics.overall_risk_score"],
+            "confidence": 0.7,
+            "used_in": ["verdict.primary_rationale"],
+        }
+        artifacts["mirofish_report_claims"] = {"claim_refs": [report_claim]}
+        verdict = {
+            "final_verdict": "RECOMMEND",
+            "primary_rationale_claim_refs": ["mirofish_claim_over"],
+        }
+        audit = ClaimRefAuditor().audit({**artifacts, "verdict": verdict})
+
+        gate = VerdictGateEngine().evaluate(artifacts, verdict, audit, ReportCritic().review(artifacts))
+
+        self.assertEqual(gate.result, "blocked")
+        self.assertTrue(any("overclaimed" in error for error in gate.errors))
+
+    def test_report_critic_warns_on_missing_scenario_support(self) -> None:
+        artifacts = base_council_inputs()
+        artifacts["mirofish_report_claims"] = {
+            "claim_refs": [
+                {
+                    "claim_id": "mirofish_claim_scenario_gap",
+                    "claim_type": "report_substrate",
+                    "status": "source_observed",
+                    "text": "Opt-in beta is lower risk according to the report.",
+                    "source_refs": ["artifact:mirofish_report.md"],
+                    "confidence": 0.5,
+                    "used_in": ["mirofish_report_substrate"],
+                }
+            ]
+        }
+
+        critique = ReportCritic().review(artifacts)
+
+        self.assertEqual(critique["missing_scenario_claim_ids"], ["mirofish_claim_scenario_gap"])
+
+    def test_gate_blocks_report_claim_without_scenario_support_in_primary_rationale(self) -> None:
+        artifacts = base_council_inputs()
+        report_claim = {
+            "claim_id": "mirofish_claim_scenario_gap",
+            "claim_type": "report_substrate",
+            "status": "source_observed",
+            "text": "Opt-in beta is lower risk according to the report.",
+            "source_refs": ["artifact:mirofish_report.md"],
+            "confidence": 0.5,
+            "used_in": ["verdict.primary_rationale"],
+        }
+        artifacts["mirofish_report_claims"] = {"claim_refs": [report_claim]}
+        verdict = {
+            "final_verdict": "RECOMMEND",
+            "primary_rationale_claim_refs": ["mirofish_claim_scenario_gap"],
+        }
+        audit = ClaimRefAuditor().audit({**artifacts, "verdict": verdict})
+
+        gate = VerdictGateEngine().evaluate(artifacts, verdict, audit, ReportCritic().review(artifacts))
+
+        self.assertEqual(gate.result, "blocked")
+        self.assertTrue(any("without scenario or metric support" in error for error in gate.errors))
 
     def test_claim_ref_auditor_requires_corroborated_council_judgment_for_primary_rationale(self) -> None:
         auditor = ClaimRefAuditor()

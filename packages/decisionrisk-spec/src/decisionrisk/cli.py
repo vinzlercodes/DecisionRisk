@@ -12,6 +12,7 @@ from . import __version__
 from .artifacts import ArtifactStore, artifact_paths, collect_claim_refs, load_case, read_json, sha256_file, write_json
 from .council import ClaimRefAuditor, VerdictCouncilRunner
 from .fixtures import artifact_payloads
+from .report_substrate import REPORT_SUBSTRATE_ARTIFACTS, normalize_report_to_claims, replay_report_payload, valid_report_claim_ref
 from .runtime_modes import CANONICAL_RUNTIME_MODES, assert_runtime_mode_available, parse_runtime_mode
 from .safety import assess_case
 
@@ -22,6 +23,9 @@ REQUIRED_ARTIFACTS = {
     "risk_graph",
     "scenario_runs",
     "simulation_metrics",
+    "mirofish_report",
+    "mirofish_report_markdown",
+    "mirofish_report_claims",
     "council_rounds",
     "verdict",
     "risk_docket",
@@ -104,6 +108,18 @@ def write_replay_shaped_run(
     council_inputs = {name: payload for name, payload in payloads.items() if name not in COUNCIL_OUTPUT_ARTIFACTS}
     for name, payload in council_inputs.items():
         artifact_refs[name] = store.write_json_artifact(name, payload).as_dict()
+
+    report_payload = replay_report_payload(council_inputs, mode)
+    report_claims = normalize_report_to_claims(report_payload)
+    council_inputs["mirofish_report"] = report_payload
+    council_inputs["mirofish_report_markdown"] = report_payload["markdown_content"]
+    council_inputs["mirofish_report_claims"] = report_claims
+    artifact_refs["mirofish_report"] = store.write_json_artifact("mirofish_report", report_payload).as_dict()
+    artifact_refs["mirofish_report_markdown"] = store.write_text_artifact(
+        "mirofish_report.md",
+        report_payload["markdown_content"],
+    ).as_dict()
+    artifact_refs["mirofish_report_claims"] = store.write_json_artifact("mirofish_report_claims", report_claims).as_dict()
 
     council_outputs = VerdictCouncilRunner().run(council_inputs, mode=mode)
     artifact_refs["council_rounds"] = store.write_json_artifact(
@@ -220,10 +236,25 @@ def validate_output_dir(output_dir: Path, expected_mode: str | None = None) -> l
         if verdict.get("final_verdict") not in {"RECOMMEND", "DEFER", "NO_GO"}:
             errors.append("verdict.final_verdict is not allowed")
 
-    if any(name.startswith("mirofish_report") for name in artifacts):
-        missing_council = {"council_rounds", "verdict", "risk_docket"} - set(artifacts)
-        if missing_council:
-            errors.append(f"MiroFish report substrate is not final without council artifacts: {sorted(missing_council)}")
+    missing_report_substrate = set(REPORT_SUBSTRATE_ARTIFACTS) - set(artifacts)
+    if missing_report_substrate:
+        errors.append(f"run_manifest.json missing report substrate artifacts: {sorted(missing_report_substrate)}")
+
+    missing_council = {"council_rounds", "verdict", "risk_docket"} - set(artifacts)
+    if missing_council:
+        errors.append(f"MiroFish report substrate is not final without council artifacts: {sorted(missing_council)}")
+
+    report_claims_ref = artifacts.get("mirofish_report_claims")
+    if report_claims_ref:
+        report_claims_path = store.resolve(report_claims_ref)
+        if report_claims_path.exists():
+            report_claims = read_json(report_claims_path)
+            for index, claim_ref in enumerate(report_claims.get("claim_refs", []), start=1):
+                if not isinstance(claim_ref, dict):
+                    errors.append(f"mirofish_report_claims claim {index} is not a ClaimRef object")
+                    continue
+                if not valid_report_claim_ref(claim_ref):
+                    errors.append(f"mirofish_report_claims claim {claim_ref.get('claim_id', index)} is malformed")
 
     scenario_ref = artifacts.get("scenario_runs")
     if scenario_ref:

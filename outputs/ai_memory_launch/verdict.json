@@ -15,7 +15,7 @@
     "Prepare a privacy-focused press FAQ"
   ],
   "risk_level": "medium",
-  "strongest_dissent": "Default-on may accelerate adoption if the company can prove controls are clear before launch.",
+  "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
   "threshold_verdict": "RECOMMEND",
   "what_would_change_the_verdict": [
     "Public evidence that users strongly prefer default-on memory",

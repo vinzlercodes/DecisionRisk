@@ -311,6 +311,7 @@ class DecisionRiskBackendRunnerTests(unittest.TestCase):
             self.assertEqual(manifest["mode"], "live_smoke")
             self.assertIn("mirofish_report", manifest["artifacts"])
             self.assertIn("mirofish_report_markdown", manifest["artifacts"])
+            self.assertIn("mirofish_report_claims", manifest["artifacts"])
             self.assertIn("council_rounds", manifest["artifacts"])
             self.assertIn("verdict", manifest["artifacts"])
             self.assertIn("risk_docket", manifest["artifacts"])

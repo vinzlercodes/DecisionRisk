@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from decisionrisk.artifacts import load_case, read_json, write_json
+from decisionrisk.artifacts import load_case, read_json, sha256_file, write_json
 from decisionrisk.safety import assess_case
 
 
@@ -37,6 +37,9 @@ class DecisionRiskCliTests(unittest.TestCase):
             self.assertEqual(manifest["case_id"], "ai_memory_launch")
             self.assertEqual(manifest["mode"], "replay")
             self.assertIn("sha256", manifest["artifacts"]["verdict"])
+            self.assertIn("mirofish_report", manifest["artifacts"])
+            self.assertIn("mirofish_report_markdown", manifest["artifacts"])
+            self.assertIn("mirofish_report_claims", manifest["artifacts"])
             self.assertTrue((output_dir / manifest["artifacts"]["risk_docket"]["path"]).exists())
 
     def test_legacy_runtime_modes_are_rejected(self) -> None:
@@ -127,6 +130,40 @@ class DecisionRiskCliTests(unittest.TestCase):
             errors = validate_output_dir(output_dir)
 
             self.assertTrue(any("MiroFish report substrate is not final" in error for error in errors))
+
+    def test_validator_requires_all_report_substrate_artifacts(self) -> None:
+        from decisionrisk.cli import validate_output_dir
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "ai_memory_launch"
+            run_result = run_cli("run", str(CASE), "--mode", "replay", "--output-dir", str(output_dir))
+            self.assertEqual(run_result.returncode, 0, run_result.stderr)
+            manifest = read_json(output_dir / "run_manifest.json")
+            manifest["artifacts"].pop("mirofish_report_markdown")
+            write_json(output_dir / "run_manifest.json", manifest)
+
+            errors = validate_output_dir(output_dir)
+
+            self.assertTrue(any("missing report substrate artifacts" in error for error in errors))
+
+    def test_validator_rejects_malformed_report_claims(self) -> None:
+        from decisionrisk.cli import validate_output_dir
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "ai_memory_launch"
+            run_result = run_cli("run", str(CASE), "--mode", "replay", "--output-dir", str(output_dir))
+            self.assertEqual(run_result.returncode, 0, run_result.stderr)
+            claims_path = output_dir / "mirofish_report_claims.json"
+            claims = read_json(claims_path)
+            claims["claim_refs"][0].pop("source_refs")
+            write_json(claims_path, claims)
+            manifest = read_json(output_dir / "run_manifest.json")
+            manifest["artifacts"]["mirofish_report_claims"]["sha256"] = sha256_file(claims_path)
+            write_json(output_dir / "run_manifest.json", manifest)
+
+            errors = validate_output_dir(output_dir)
+
+            self.assertTrue(any("mirofish_report_claims claim" in error for error in errors))
 
     def test_verdict_primary_rationale_has_supported_claim(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from pathlib import Path
 from typing import Any
+
+from decisionrisk.report_substrate import normalize_report_to_claims
 
 from .contracts import MiroFishArtifactRef, MiroFishReportRef
 
@@ -71,50 +72,9 @@ class MiroFishArtifactFacade:
         traces: list[dict[str, Any]] | None = None,
         graph: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Convert report text into conservative ClaimRef-shaped records.
+        """Convert report text into conservative ClaimRef-shaped records."""
 
-        These claims remain unsupported substrate until later ClaimRef audit
-        work connects them to evidence, traces, graph inferences, or council
-        judgments.
-        """
-
-        payload = self._report_payload(report)
-        markdown = payload.get("markdown_content", "")
-        if not isinstance(markdown, str):
-            markdown = ""
-
-        claim_refs = []
-        for index, text in enumerate(_candidate_claims(markdown), start=1):
-            claim_refs.append(
-                {
-                    "claim_id": f"mirofish_claim_{index:04d}",
-                    "status": "unsupported_assumption",
-                    "text": text,
-                    "confidence": 0.2,
-                    "source_refs": [
-                        {
-                            "artifact": "mirofish_report.md",
-                            "report_id": payload.get("report_id"),
-                            "substrate_only": True,
-                        }
-                    ],
-                    "used_in": ["mirofish_report_substrate"],
-                    "metadata": {
-                        "requires_claimref_audit": True,
-                        "raw_mirofish_output": True,
-                    },
-                }
-            )
-
-        return {
-            "schema_version": "mirofish_report_claims.v1",
-            "substrate_only": True,
-            "report_id": payload.get("report_id"),
-            "simulation_id": payload.get("simulation_id"),
-            "trace_count": len(traces or []),
-            "graph_ref": graph or {},
-            "claim_refs": claim_refs,
-        }
+        return normalize_report_to_claims(self._report_payload(report), traces=traces, graph=graph)
 
     def _report_payload(self, report: MiroFishReportRef | dict[str, Any] | object) -> dict[str, Any]:
         if isinstance(report, MiroFishReportRef):
@@ -139,33 +99,6 @@ class MiroFishArtifactFacade:
         if hasattr(report, "to_dict"):
             return report.to_dict()
         return dict(getattr(report, "__dict__", {}))
-
-
-def _candidate_claims(markdown: str) -> list[str]:
-    candidates: list[str] = []
-    for block in re.split(r"\n\s*\n", markdown):
-        text = _clean_claim_text(block)
-        if not text:
-            continue
-        if text.startswith("#"):
-            continue
-        if len(text) < 24:
-            continue
-        candidates.append(text)
-    return candidates
-
-
-def _clean_claim_text(text: str) -> str:
-    lines = []
-    for line in text.splitlines():
-        stripped = line.strip()
-        stripped = re.sub(r"^[-*]\s+", "", stripped)
-        stripped = re.sub(r"^\d+[.)]\s+", "", stripped)
-        stripped = stripped.lstrip(">").strip()
-        if stripped:
-            lines.append(stripped)
-    return " ".join(lines).strip()
-
 
 def _write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
