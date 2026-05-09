@@ -11,4 +11,4 @@ PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/l
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk validate outputs/ai_memory_launch
 ```
 
-Canonical runtime modes are `replay`, `live_smoke`, `live_full`, and `eval`. The clean spec CLI owns deterministic replay/eval artifact contracts. Live MiroFish execution is owned by the MiroFish backend runtime API so this package does not take a dependency on MiroFish internals.
+Canonical runtime modes are `replay`, `live_smoke`, `live_full`, and `eval`. The clean spec CLI owns deterministic replay/eval artifact contracts, including Replay report substrate fixtures for `mirofish_report.json`, `mirofish_report.md`, and `mirofish_report_claims.json`. Live MiroFish execution is owned by the MiroFish backend runtime API so this package does not take a dependency on MiroFish internals.

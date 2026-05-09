@@ -8,7 +8,7 @@ It helps teams rehearse consequential decisions with evidence graphs, scenario e
 
 The current implementation establishes the MiroFish-first monorepo, imports MiroFish under `apps/decisionrisk-mirofish/`, and ships a deterministic replay foundation for the LaunchRisk `ai_memory_launch` demo.
 
-The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free. Live modes are backend-owned MiroFish runtimes with explicit preflight checks. Replay, eval, and reduced `live_smoke` runs finalize through the deterministic Verdict Council, and raw MiroFish report output is never a final answer.
+The runtime contract now recognizes `replay`, `live_smoke`, `live_full`, and `eval`. Replay remains deterministic and API-key-free by using Replay report substrate fixtures instead of live MiroFish execution. Live modes are backend-owned MiroFish runtimes with explicit preflight checks. Replay, eval, and reduced `live_smoke` runs finalize through the deterministic Verdict Council, and raw report substrate is never a final answer.
 
 ## Quickstart
 
@@ -49,11 +49,13 @@ audit.md                          Live implementation audit
 
 `run_manifest.json` is the root artifact. It points to every input and output artifact with a path and SHA-256 hash. Files are the source of truth for replay and validation.
 
+Every final run includes report substrate artifacts: `mirofish_report.json`, `mirofish_report.md`, and `mirofish_report_claims.json`. Replay and eval generate deterministic Replay report substrate; live modes generate MiroFish report substrate through the backend.
+
 The manifest `mode` must be one of the canonical runtime modes. `live_smoke` and `live_full` require `DECISIONRISK_ENABLE_LIVE=1`; `live_full` also requires live LLM council enablement and an API key. The clean CLI accepts those modes for contract validation but does not execute MiroFish directly; use `POST /api/decisionrisk/runs` in the backend for live runs.
 
 ## Claim Provenance
 
-Durable artifacts use ClaimRefs to identify assertions and their provenance. The validator rejects a verdict whose primary rationale lacks a non-unsupported ClaimRef.
+Durable artifacts use ClaimRefs to identify assertions and their provenance. The validator rejects malformed report ClaimRefs, missing report substrate, and any verdict whose primary rationale lacks an eligible non-unsupported ClaimRef.
 
 ## License
 

@@ -4,6 +4,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from .artifacts import collect_claim_refs
+from .report_substrate import (
+    REPORT_SUBSTRATE_ARTIFACTS,
+    overclaiming_claim_ids,
+    scenario_unsupported_claim_ids,
+    valid_report_claim_ref,
+)
 
 
 FINAL_VERDICTS = {"RECOMMEND", "DEFER", "NO_GO"}
@@ -25,6 +31,9 @@ REQUIRED_COUNCIL_OUTPUTS = (
 REQUIRED_COUNCIL_INPUTS = {
     "decision_case",
     "grounding_report",
+    "mirofish_report",
+    "mirofish_report_markdown",
+    "mirofish_report_claims",
     "risk_graph",
     "scenario_runs",
     "simulation_metrics",
@@ -272,27 +281,52 @@ class ReportCritic:
 
     def review(self, artifacts: dict[str, Any]) -> dict[str, Any]:
         report_claims = artifacts.get("mirofish_report_claims")
+        missing_report_artifacts = sorted(name for name in REPORT_SUBSTRATE_ARTIFACTS if name not in artifacts)
         if not isinstance(report_claims, dict):
             return {
                 "substrate_present": False,
+                "missing_report_artifacts": missing_report_artifacts,
                 "unsupported_claim_ids": [],
+                "malformed_claim_ids": [],
+                "overclaim_claim_ids": [],
+                "missing_scenario_claim_ids": [],
                 "warnings": [],
             }
 
+        claim_refs = [claim for claim in report_claims.get("claim_refs", []) if isinstance(claim, dict)]
         unsupported_claim_ids = [
             str(claim.get("claim_id"))
-            for claim in report_claims.get("claim_refs", [])
+            for claim in claim_refs
             if claim.get("status") == "unsupported_assumption"
         ]
+        malformed_claim_ids = [
+            str(claim.get("claim_id", f"report_claim_{index}"))
+            for index, claim in enumerate(claim_refs, start=1)
+            if not valid_report_claim_ref(claim)
+        ]
+        overclaim_claim_ids = overclaiming_claim_ids(claim_refs)
+        missing_scenario_claim_ids = scenario_unsupported_claim_ids(claim_refs)
         warnings = []
         if unsupported_claim_ids:
             warnings.append(
                 "MiroFish report substrate contains claims that require DecisionRisk council judgment before use."
             )
+        if malformed_claim_ids:
+            warnings.append(
+                "MiroFish report substrate contains malformed ClaimRefs that cannot support a final rationale."
+            )
+        if overclaim_claim_ids:
+            warnings.append("MiroFish report substrate contains overclaiming language that requires council restraint.")
+        if missing_scenario_claim_ids:
+            warnings.append("MiroFish report substrate contains claims without scenario or metric support.")
 
         return {
             "substrate_present": True,
+            "missing_report_artifacts": missing_report_artifacts,
             "unsupported_claim_ids": unsupported_claim_ids,
+            "malformed_claim_ids": malformed_claim_ids,
+            "overclaim_claim_ids": overclaim_claim_ids,
+            "missing_scenario_claim_ids": missing_scenario_claim_ids,
             "warnings": warnings,
         }
 
@@ -315,6 +349,7 @@ class ClaimRefAuditor:
             support_map[claim_id] = {
                 "status": claim_ref.get("status"),
                 "source_refs": source_refs,
+                "valid_claim_ref": _valid_claim_ref(claim_ref),
                 "has_mirofish_report_source": _has_mirofish_report_source(source_refs),
                 "has_non_mirofish_source": _has_non_mirofish_source(source_refs),
                 "primary_rationale_eligible": self.primary_rationale_eligible(claim_ref),
@@ -334,6 +369,8 @@ class ClaimRefAuditor:
         }
 
     def primary_rationale_eligible(self, claim_ref: dict[str, Any]) -> bool:
+        if not _valid_claim_ref(claim_ref):
+            return False
         status = claim_ref.get("status")
         if status == "unsupported_assumption":
             return False
@@ -360,6 +397,10 @@ class VerdictGateEngine:
         if missing_inputs:
             errors.append(f"missing council inputs: {missing_inputs}")
 
+        missing_report_artifacts = report_critique.get("missing_report_artifacts", [])
+        if missing_report_artifacts:
+            errors.append(f"missing report substrate artifacts: {missing_report_artifacts}")
+
         if verdict.get("final_verdict") not in FINAL_VERDICTS:
             errors.append("verdict.final_verdict is not allowed")
 
@@ -380,6 +421,22 @@ class VerdictGateEngine:
             errors.append(
                 "verdict.primary_rationale uses unsupported or uncorroborated ClaimRefs: "
                 + ", ".join(claim_audit["unsupported_rationale_failures"])
+            )
+
+        rationale_ref_set = {str(claim_id) for claim_id in rationale_refs}
+        malformed_final_refs = sorted(rationale_ref_set & set(report_critique.get("malformed_claim_ids", [])))
+        if malformed_final_refs:
+            errors.append("verdict.primary_rationale uses malformed report ClaimRefs: " + ", ".join(malformed_final_refs))
+
+        overclaim_final_refs = sorted(rationale_ref_set & set(report_critique.get("overclaim_claim_ids", [])))
+        if overclaim_final_refs:
+            errors.append("verdict.primary_rationale uses overclaimed report ClaimRefs: " + ", ".join(overclaim_final_refs))
+
+        missing_scenario_final_refs = sorted(rationale_ref_set & set(report_critique.get("missing_scenario_claim_ids", [])))
+        if missing_scenario_final_refs:
+            errors.append(
+                "verdict.primary_rationale uses report ClaimRefs without scenario or metric support: "
+                + ", ".join(missing_scenario_final_refs)
             )
 
         result = "blocked" if errors else _candidate_gate_result(verdict.get("final_verdict"))
@@ -694,6 +751,16 @@ def _source_refs(claim_ref: dict[str, Any]) -> list[str]:
             if artifact:
                 normalized.append(f"artifact:{artifact}")
     return normalized
+
+
+def _valid_claim_ref(claim_ref: dict[str, Any]) -> bool:
+    if not isinstance(claim_ref, dict):
+        return False
+    if not {"claim_id", "status", "text"}.issubset(claim_ref):
+        return False
+    if "source_refs" in claim_ref and not isinstance(claim_ref.get("source_refs"), list):
+        return False
+    return bool(claim_ref.get("claim_id")) and bool(claim_ref.get("status")) and bool(claim_ref.get("text"))
 
 
 def _has_mirofish_report_source(source_refs: list[str]) -> bool:
