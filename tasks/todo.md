@@ -45,6 +45,9 @@
 - [x] Enforce minimal publish gates for MiroFish substrate and council artifacts.
 - [x] Add council, validator, and backend runtime tests for issue #8.
 - [x] Update context, demo, and audit documentation for the Verdict Council pipeline.
+- [x] Add Replay report substrate fixtures so every runtime mode loads report substrate before final verdict.
+- [x] Harden `ReportCritic`, `ClaimRefAuditor`, and `VerdictGateEngine` for issue #10.
+- [x] Add validator and council tests for missing report substrate, malformed report ClaimRefs, unsupported rationale, overclaims, and missing scenario support.
 
 ## Review
 
@@ -55,3 +58,4 @@
 - GitHub creation status: verified with `gh issue list --state all --limit 40 --json number,title,url,labels`.
 - Runtime mode contract: implemented issue #6 contract for CLI and backend, including reduced one-run `live_smoke` validation. Validation results: unittest suite passed with Flask route tests skipped when Flask is unavailable, compileall passed, replay generation passed in `/private/tmp`, existing replay output validation passed, and eval/golden comparison passed.
 - Verdict Council pipeline: implemented issue #8 deterministic council service boundary for replay, eval, and live_smoke. Validation results: unittest suite passed with 34 tests and 5 Flask skips, compileall passed, replay generation and validation passed in `/private/tmp`, checked demo outputs were refreshed and validated, and eval/golden comparison passed.
+- Verdict gates: implemented issue #10 all-mode report substrate requirements and stricter ReportCritic/ClaimRefAuditor/VerdictGateEngine behavior. Validation results are tracked in `audit.md`.
