@@ -1,0 +1,13 @@
+{
+  "graph_id": "risk_graph_ai_memory_launch_replay",
+  "markdown_content": "# MiroFish Report Substrate: AcmeAI Memory Launch Risk\n\nThis replay report substrate summarizes deterministic DecisionRisk fixture artifacts in the MiroFish report handoff shape. It is not a final DecisionRisk verdict.\n\nThe decision question is: Should AcmeAI launch long-term assistant memory as default-on, opt-in beta, or enterprise-only?\n\nThe scenario ensemble contains 36 option x scenario x seed runs.\n\nThe lowest deterministic overall risk score belongs to opt_in_beta with score 0.43.\n\nAny recommendation must be produced by the Verdict Council after ClaimRef audit, not by this report substrate.\n",
+  "metadata": {
+    "case_id": "ai_memory_launch",
+    "mode": "deterministic_replay",
+    "provenance": "replay_report_substrate"
+  },
+  "report_id": "replay_report_ai_memory_launch",
+  "simulation_id": "replay_simulation_ai_memory_launch",
+  "status": "completed",
+  "substrate_only": true
+}

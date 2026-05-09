@@ -1,25 +1,250 @@
 {
-  "claim_refs": [],
+  "chair_output": {
+    "claim_refs": [
+      "claim_0001",
+      "claim_0002",
+      "claim_0004"
+    ],
+    "confidence": 0.66,
+    "final_verdict": "RECOMMEND",
+    "mitigation_requirements": [
+      "Publish memory controls before launch",
+      "Expose deletion and temporary-use controls in onboarding",
+      "Prepare a privacy-focused press FAQ"
+    ],
+    "rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+    "recommended_option_id": "opt_in_beta",
+    "risk_level": "medium",
+    "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+    "verdict_draft": "RECOMMEND",
+    "what_would_change_the_verdict": [
+      "Public evidence that users strongly prefer default-on memory",
+      "Beta telemetry showing low opt-out and low trust damage"
+    ]
+  },
+  "claim_refs": [
+    {
+      "claim_id": "claim_council_mirofish_0001",
+      "claim_type": "council_judgment",
+      "confidence": 0.66,
+      "metadata": {
+        "corroborates_mirofish_report": true,
+        "mode": "deterministic_replay"
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "metrics:simulation_metrics.overall_risk_score",
+        "run:default_on_base_case_seed_1"
+      ],
+      "status": "council_judgment",
+      "text": "The Verdict Council treated raw MiroFish report claims as substrate and used them only when corroborated by DecisionRisk metrics or run traces.",
+      "used_in": [
+        "council_rounds.report_critique"
+      ]
+    }
+  ],
+  "confidence": 0.66,
+  "council_config": {
+    "max_rounds": 3,
+    "model_policy": "deterministic_or_logged",
+    "required_outputs": [
+      "claim_refs",
+      "confidence",
+      "dissent",
+      "mitigation_requirements"
+    ],
+    "required_roles": [
+      "growth_strategist",
+      "trust_reputation_analyst",
+      "regulatory_analyst",
+      "competitor_strategist",
+      "decision_chair"
+    ],
+    "risk_pack": "launch_risk",
+    "role_specs": [
+      {
+        "lens": "Adoption, retention, learning velocity, and launch momentum.",
+        "name": "Growth Strategist",
+        "role_id": "growth_strategist"
+      },
+      {
+        "lens": "User trust, press framing, privacy perception, and brand damage.",
+        "name": "Trust and Reputation Analyst",
+        "role_id": "trust_reputation_analyst"
+      },
+      {
+        "lens": "Regulator attention, compliance risk, and public commitments.",
+        "name": "Regulatory Analyst",
+        "role_id": "regulatory_analyst"
+      },
+      {
+        "lens": "Adversarial framing, attack surface, and market narrative.",
+        "name": "Competitor Strategist",
+        "role_id": "competitor_strategist"
+      }
+    ],
+    "temperature": 0.2
+  },
+  "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+  "gate": {
+    "errors": [],
+    "result": "pass",
+    "warnings": [
+      "MiroFish report substrate contains claims that require DecisionRisk council judgment before use.",
+      "MiroFish report substrate contains claims without scenario or metric support."
+    ]
+  },
+  "mitigation_requirements": [
+    "Publish memory controls before launch",
+    "Expose deletion and temporary-use controls in onboarding",
+    "Prepare a privacy-focused press FAQ"
+  ],
   "mode": "deterministic_replay",
+  "role_outputs": [
+    {
+      "analysis": "Opt-in beta preserves learning velocity while avoiding the adoption-at-all-costs risk of default-on launch.",
+      "claim_refs": [
+        "claim_0002",
+        "claim_0005"
+      ],
+      "confidence": 0.66,
+      "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+      "mitigation_requirements": [
+        "Run an opt-in beta before wider launch"
+      ],
+      "role_id": "growth_strategist",
+      "role_name": "Growth Strategist"
+    },
+    {
+      "analysis": "Default-on memory creates avoidable trust and press-framing risk; explicit controls are required before broader launch.",
+      "claim_refs": [
+        "claim_0001",
+        "claim_0003",
+        "claim_0004"
+      ],
+      "confidence": 0.66,
+      "dissent": "Enterprise-only launch may be safer for reputation but delays consumer learning.",
+      "mitigation_requirements": [
+        "Publish memory controls before launch",
+        "Prepare a privacy-focused press FAQ"
+      ],
+      "role_id": "trust_reputation_analyst",
+      "role_name": "Trust and Reputation Analyst"
+    },
+    {
+      "analysis": "The lower-risk path is a constrained launch with visible commitments, deletion controls, and enough telemetry to close evidence gaps.",
+      "claim_refs": [
+        "claim_0004",
+        "claim_0007"
+      ],
+      "confidence": 0.66,
+      "dissent": "A public launch could become acceptable if evidence closes consent and deletion-control gaps before release.",
+      "mitigation_requirements": [
+        "Expose deletion and temporary-use controls in onboarding"
+      ],
+      "role_id": "regulatory_analyst",
+      "role_name": "Regulatory Analyst"
+    },
+    {
+      "analysis": "Competitors can attack default-on memory as careless handling of personal context; opt-in beta reduces that attack surface.",
+      "claim_refs": [
+        "claim_0003",
+        "claim_0006"
+      ],
+      "confidence": 0.66,
+      "dissent": "Competitor attack risk may be tolerable if the company preempts the narrative with strong user-control proof.",
+      "mitigation_requirements": [
+        "Pre-brief competitive narrative risks with evidence-backed control messaging"
+      ],
+      "role_id": "competitor_strategist",
+      "role_name": "Competitor Strategist"
+    }
+  ],
   "rounds": [
     {
-      "advisors": [
+      "claim_refs": [
+        "claim_0002",
+        "claim_0005",
+        "claim_0001",
+        "claim_0003",
+        "claim_0004",
+        "claim_0007",
+        "claim_0006"
+      ],
+      "council_roles": [
         "Growth Strategist",
         "Trust and Reputation Analyst",
         "Regulatory Analyst",
         "Competitor Strategist"
       ],
-      "claim_refs": [
-        "claim_0001",
-        "claim_0005"
-      ],
       "name": "Independent analysis",
+      "role_outputs": [
+        {
+          "analysis": "Opt-in beta preserves learning velocity while avoiding the adoption-at-all-costs risk of default-on launch.",
+          "claim_refs": [
+            "claim_0002",
+            "claim_0005"
+          ],
+          "confidence": 0.66,
+          "dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+          "mitigation_requirements": [
+            "Run an opt-in beta before wider launch"
+          ],
+          "role_id": "growth_strategist",
+          "role_name": "Growth Strategist"
+        },
+        {
+          "analysis": "Default-on memory creates avoidable trust and press-framing risk; explicit controls are required before broader launch.",
+          "claim_refs": [
+            "claim_0001",
+            "claim_0003",
+            "claim_0004"
+          ],
+          "confidence": 0.66,
+          "dissent": "Enterprise-only launch may be safer for reputation but delays consumer learning.",
+          "mitigation_requirements": [
+            "Publish memory controls before launch",
+            "Prepare a privacy-focused press FAQ"
+          ],
+          "role_id": "trust_reputation_analyst",
+          "role_name": "Trust and Reputation Analyst"
+        },
+        {
+          "analysis": "The lower-risk path is a constrained launch with visible commitments, deletion controls, and enough telemetry to close evidence gaps.",
+          "claim_refs": [
+            "claim_0004",
+            "claim_0007"
+          ],
+          "confidence": 0.66,
+          "dissent": "A public launch could become acceptable if evidence closes consent and deletion-control gaps before release.",
+          "mitigation_requirements": [
+            "Expose deletion and temporary-use controls in onboarding"
+          ],
+          "role_id": "regulatory_analyst",
+          "role_name": "Regulatory Analyst"
+        },
+        {
+          "analysis": "Competitors can attack default-on memory as careless handling of personal context; opt-in beta reduces that attack surface.",
+          "claim_refs": [
+            "claim_0003",
+            "claim_0006"
+          ],
+          "confidence": 0.66,
+          "dissent": "Competitor attack risk may be tolerable if the company preempts the narrative with strong user-control proof.",
+          "mitigation_requirements": [
+            "Pre-brief competitive narrative risks with evidence-backed control messaging"
+          ],
+          "role_id": "competitor_strategist",
+          "role_name": "Competitor Strategist"
+        }
+      ],
       "round": 1
     },
     {
       "claim_refs": [
         "claim_0002",
-        "claim_0003"
+        "claim_0003",
+        "claim_council_mirofish_0001"
       ],
       "claim_support_map": {
         "claim_0001": {
@@ -30,7 +255,8 @@
             "evidence:public_privacy_concerns_summary",
             "evidence:privacy_faq_draft"
           ],
-          "status": "source_observed"
+          "status": "source_observed",
+          "valid_claim_ref": true
         },
         "claim_0002": {
           "has_mirofish_report_source": false,
@@ -40,7 +266,8 @@
             "evidence:launch_memo",
             "graph:launch_risk"
           ],
-          "status": "graph_inferred"
+          "status": "graph_inferred",
+          "valid_claim_ref": true
         },
         "claim_0003": {
           "has_mirofish_report_source": false,
@@ -49,7 +276,8 @@
           "source_refs": [
             "run:privacy_backlash_seed_2"
           ],
-          "status": "simulation_observed"
+          "status": "simulation_observed",
+          "valid_claim_ref": true
         },
         "claim_0004": {
           "has_mirofish_report_source": false,
@@ -59,7 +287,8 @@
             "evidence:openai_memory_controls_summary",
             "evidence:privacy_faq_draft"
           ],
-          "status": "web_verified"
+          "status": "web_verified",
+          "valid_claim_ref": true
         },
         "claim_0005": {
           "has_mirofish_report_source": false,
@@ -69,7 +298,8 @@
             "council:growth_strategist",
             "council:trust_reputation_analyst"
           ],
-          "status": "council_judgment"
+          "status": "council_judgment",
+          "valid_claim_ref": true
         },
         "claim_0006": {
           "has_mirofish_report_source": false,
@@ -78,35 +308,149 @@
           "source_refs": [
             "run:competitor_attack_seed_1"
           ],
-          "status": "simulation_observed"
+          "status": "simulation_observed",
+          "valid_claim_ref": true
         },
         "claim_0007": {
           "has_mirofish_report_source": false,
           "has_non_mirofish_source": false,
           "primary_rationale_eligible": false,
           "source_refs": [],
-          "status": "unsupported_assumption"
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
+        },
+        "claim_council_mirofish_0001": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": true,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "metrics:simulation_metrics.overall_risk_score",
+            "run:default_on_base_case_seed_1"
+          ],
+          "status": "council_judgment",
+          "valid_claim_ref": true
+        },
+        "mirofish_claim_0001": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "grounding:replay_report_substrate"
+          ],
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
+        },
+        "mirofish_claim_0002": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "grounding:replay_report_substrate"
+          ],
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
+        },
+        "mirofish_claim_0003": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "grounding:replay_report_substrate"
+          ],
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
+        },
+        "mirofish_claim_0004": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "grounding:replay_report_substrate"
+          ],
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
+        },
+        "mirofish_claim_0005": {
+          "has_mirofish_report_source": true,
+          "has_non_mirofish_source": true,
+          "primary_rationale_eligible": false,
+          "source_refs": [
+            "artifact:mirofish_report.md",
+            "grounding:replay_report_substrate"
+          ],
+          "status": "unsupported_assumption",
+          "valid_claim_ref": true
         }
       },
       "name": "Report critique and ClaimRef audit",
       "report_critique": {
-        "substrate_present": false,
-        "unsupported_claim_ids": [],
-        "warnings": []
+        "malformed_claim_ids": [],
+        "missing_report_artifacts": [],
+        "missing_scenario_claim_ids": [
+          "mirofish_claim_0001",
+          "mirofish_claim_0002",
+          "mirofish_claim_0003",
+          "mirofish_claim_0004",
+          "mirofish_claim_0005"
+        ],
+        "overclaim_claim_ids": [],
+        "substrate_present": true,
+        "unsupported_claim_ids": [
+          "mirofish_claim_0001",
+          "mirofish_claim_0002",
+          "mirofish_claim_0003",
+          "mirofish_claim_0004",
+          "mirofish_claim_0005"
+        ],
+        "warnings": [
+          "MiroFish report substrate contains claims that require DecisionRisk council judgment before use.",
+          "MiroFish report substrate contains claims without scenario or metric support."
+        ]
       },
       "round": 2
     },
     {
-      "advisor": "Decision Chair",
+      "chair_output": {
+        "claim_refs": [
+          "claim_0001",
+          "claim_0002",
+          "claim_0004"
+        ],
+        "confidence": 0.66,
+        "final_verdict": "RECOMMEND",
+        "mitigation_requirements": [
+          "Publish memory controls before launch",
+          "Expose deletion and temporary-use controls in onboarding",
+          "Prepare a privacy-focused press FAQ"
+        ],
+        "rationale": "Opt-in beta reduces trust and narrative cascade risk while preserving enough adoption signal for learning.",
+        "recommended_option_id": "opt_in_beta",
+        "risk_level": "medium",
+        "strongest_dissent": "Default-on could win adoption faster if controls are exceptionally clear and onboarding builds trust.",
+        "verdict_draft": "RECOMMEND",
+        "what_would_change_the_verdict": [
+          "Public evidence that users strongly prefer default-on memory",
+          "Beta telemetry showing low opt-out and low trust damage"
+        ]
+      },
       "claim_refs": [
         "claim_0001",
         "claim_0002",
         "claim_0004"
       ],
+      "council_role": "Decision Chair",
       "gate": {
         "errors": [],
         "result": "pass",
-        "warnings": []
+        "warnings": [
+          "MiroFish report substrate contains claims that require DecisionRisk council judgment before use.",
+          "MiroFish report substrate contains claims without scenario or metric support."
+        ]
       },
       "name": "Chair synthesis",
       "round": 3

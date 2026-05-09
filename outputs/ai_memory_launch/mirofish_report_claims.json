@@ -1,0 +1,105 @@
+{
+  "claim_refs": [
+    {
+      "claim_id": "mirofish_claim_0001",
+      "claim_type": "report_substrate",
+      "confidence": 0.2,
+      "metadata": {
+        "raw_mirofish_output": true,
+        "report_id": "replay_report_ai_memory_launch",
+        "requires_claimref_audit": true
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "grounding:replay_report_substrate"
+      ],
+      "status": "unsupported_assumption",
+      "text": "This replay report substrate summarizes deterministic DecisionRisk fixture artifacts in the MiroFish report handoff shape. It is not a final DecisionRisk verdict.",
+      "used_in": [
+        "mirofish_report_substrate"
+      ]
+    },
+    {
+      "claim_id": "mirofish_claim_0002",
+      "claim_type": "report_substrate",
+      "confidence": 0.2,
+      "metadata": {
+        "raw_mirofish_output": true,
+        "report_id": "replay_report_ai_memory_launch",
+        "requires_claimref_audit": true
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "grounding:replay_report_substrate"
+      ],
+      "status": "unsupported_assumption",
+      "text": "The decision question is: Should AcmeAI launch long-term assistant memory as default-on, opt-in beta, or enterprise-only?",
+      "used_in": [
+        "mirofish_report_substrate"
+      ]
+    },
+    {
+      "claim_id": "mirofish_claim_0003",
+      "claim_type": "report_substrate",
+      "confidence": 0.2,
+      "metadata": {
+        "raw_mirofish_output": true,
+        "report_id": "replay_report_ai_memory_launch",
+        "requires_claimref_audit": true
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "grounding:replay_report_substrate"
+      ],
+      "status": "unsupported_assumption",
+      "text": "The scenario ensemble contains 36 option x scenario x seed runs.",
+      "used_in": [
+        "mirofish_report_substrate"
+      ]
+    },
+    {
+      "claim_id": "mirofish_claim_0004",
+      "claim_type": "report_substrate",
+      "confidence": 0.2,
+      "metadata": {
+        "raw_mirofish_output": true,
+        "report_id": "replay_report_ai_memory_launch",
+        "requires_claimref_audit": true
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "grounding:replay_report_substrate"
+      ],
+      "status": "unsupported_assumption",
+      "text": "The lowest deterministic overall risk score belongs to opt_in_beta with score 0.43.",
+      "used_in": [
+        "mirofish_report_substrate"
+      ]
+    },
+    {
+      "claim_id": "mirofish_claim_0005",
+      "claim_type": "report_substrate",
+      "confidence": 0.2,
+      "metadata": {
+        "raw_mirofish_output": true,
+        "report_id": "replay_report_ai_memory_launch",
+        "requires_claimref_audit": true
+      },
+      "source_refs": [
+        "artifact:mirofish_report.md",
+        "grounding:replay_report_substrate"
+      ],
+      "status": "unsupported_assumption",
+      "text": "Any recommendation must be produced by the Verdict Council after ClaimRef audit, not by this report substrate.",
+      "used_in": [
+        "mirofish_report_substrate"
+      ]
+    }
+  ],
+  "graph_ref": {},
+  "report_id": "replay_report_ai_memory_launch",
+  "schema_version": "mirofish_report_claims.v1",
+  "simulation_id": "replay_simulation_ai_memory_launch",
+  "substrate_only": true,
+  "trace_count": 0
+}
