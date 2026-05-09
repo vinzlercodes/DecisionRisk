@@ -10,7 +10,7 @@ This guide demonstrates the capabilities currently implemented in DecisionRisk:
 - Canonical runtime mode contract for `replay`, `live_smoke`, `live_full`, and `eval`.
 - Deterministic Verdict Council pipeline for replay, eval, and reduced `live_smoke`.
 
-Replay and eval use clean deterministic artifacts. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; `live_smoke` now writes raw MiroFish report substrate before the deterministic Verdict Council produces final artifacts. Robust live role/model configuration remains follow-up work.
+Replay and eval use clean deterministic artifacts plus Replay report substrate fixtures. Live MiroFish execution is exposed through backend runtime preflight and a reduced one-run `live_smoke` facade path; every mode now writes report substrate before the deterministic Verdict Council produces final artifacts. Robust live role/model configuration remains follow-up work.
 
 ## Prerequisites
 
@@ -54,6 +54,9 @@ outputs/ai_memory_launch/
   scenario_design.json
   scenario_runs.json
   simulation_metrics.json
+  mirofish_report.json
+  mirofish_report.md
+  mirofish_report_claims.json
   council_rounds.json
   verdict.json
   risk_docket.md
@@ -75,6 +78,7 @@ What to point out:
 - Every input and output has a `sha256`.
 - `mode` is one of `replay`, `live_smoke`, `live_full`, or `eval`.
 - `mirofish_ref` is `not_used_clean_spec_runtime` for clean replay/eval mode.
+- Replay/eval still include deterministic report substrate artifacts so the Verdict Council gate shape matches live modes.
 - Files, not runtime task state, are the source of truth for replay validation.
 
 ## 3. Validate the Artifact Contract
@@ -97,8 +101,9 @@ The validator checks:
 - Required artifacts are present.
 - Artifact hashes match the manifest.
 - `scenario_runs.json` contains 36 replay runs.
+- `mirofish_report.json`, `mirofish_report.md`, and `mirofish_report_claims.json` are present before council finalization.
 - `verdict.final_verdict` is one of `RECOMMEND`, `DEFER`, or `NO_GO`.
-- `verdict.primary_rationale` has at least one non-unsupported ClaimRef.
+- `verdict.primary_rationale` has at least one eligible non-unsupported ClaimRef.
 - `risk_docket.md` contains required report sections and the responsible-use notice.
 
 ## 4. Inspect ClaimRef Provenance
@@ -209,6 +214,7 @@ The tests cover:
 - Deterministic Verdict Council services.
 - MiroFish substrate finalization gates.
 - Verdict ClaimRef support.
+- Report substrate artifact and malformed ClaimRef validation.
 - Blocked negative fixtures.
 - Prompt-injection warning behavior.
 
@@ -367,6 +373,7 @@ Implemented:
 - Replay-mode artifact generation.
 - Artifact validation.
 - ClaimRef provenance enforcement.
+- Replay report substrate fixtures for all-mode report gating.
 - Deterministic Verdict Council pipeline.
 - Reduced live_smoke MiroFish substrate handoff into the Verdict Council.
 - Safety gates.
