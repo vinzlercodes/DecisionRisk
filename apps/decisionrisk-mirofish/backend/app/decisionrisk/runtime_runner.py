@@ -19,6 +19,7 @@ from decisionrisk.artifacts import ArtifactStore, read_json, write_json
 from decisionrisk.cli import validate_output_dir
 from decisionrisk.council import VerdictCouncilRunner
 from decisionrisk.fixtures import artifact_payloads
+from decisionrisk.report_substrate import normalize_report_to_claims, replay_report_payload
 from decisionrisk.safety import assess_case
 
 
@@ -220,6 +221,17 @@ class DecisionRiskRuntimeRunner:
         council_inputs = {name: payload for name, payload in payloads.items() if name not in COUNCIL_OUTPUT_ARTIFACTS}
         for name, payload in council_inputs.items():
             artifact_refs[name] = store.write_json_artifact(name, payload).as_dict()
+        report_payload = replay_report_payload(council_inputs, mode)
+        report_claims = normalize_report_to_claims(report_payload)
+        council_inputs["mirofish_report"] = report_payload
+        council_inputs["mirofish_report_markdown"] = report_payload["markdown_content"]
+        council_inputs["mirofish_report_claims"] = report_claims
+        artifact_refs["mirofish_report"] = store.write_json_artifact("mirofish_report", report_payload).as_dict()
+        artifact_refs["mirofish_report_markdown"] = store.write_text_artifact(
+            "mirofish_report.md",
+            report_payload["markdown_content"],
+        ).as_dict()
+        artifact_refs["mirofish_report_claims"] = store.write_json_artifact("mirofish_report_claims", report_claims).as_dict()
         if include_council:
             self._write_council_outputs(store, artifact_refs, council_inputs, mode)
         input_refs["evidence_manifest"] = artifact_refs["evidence_manifest"]
@@ -265,6 +277,8 @@ class DecisionRiskRuntimeRunner:
             path = store.resolve(ref)
             if path.suffix == ".json" and path.exists():
                 inputs[name] = read_json(path)
+            elif name == "mirofish_report_markdown" and path.exists():
+                inputs[name] = path.read_text(encoding="utf-8")
         return inputs
 
 
