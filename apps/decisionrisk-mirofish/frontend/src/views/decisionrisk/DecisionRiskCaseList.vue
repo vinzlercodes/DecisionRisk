@@ -15,6 +15,7 @@
         <strong>{{ item.case_id }}</strong>
         <span>{{ item.risk_pack }}</span>
         <span>{{ item.mode }}</span>
+        <span>{{ item.validation_status }}</span>
       </RouterLink>
     </section>
   </main>
@@ -51,7 +52,7 @@ onMounted(async () => {
 
 .case-row {
   display: grid;
-  grid-template-columns: 1fr 160px 120px;
+  grid-template-columns: 1fr 160px 120px 140px;
   gap: 16px;
   padding: 12px;
   border: 1px solid #d8dee4;
