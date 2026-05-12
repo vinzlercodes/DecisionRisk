@@ -21,6 +21,7 @@
       </div>
 
       <div class="header-right">
+        <DecisionRiskNavLink />
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
@@ -83,6 +84,7 @@ import { useI18n } from 'vue-i18n'
 import GraphPanel from '../components/GraphPanel.vue'
 import Step1GraphBuild from '../components/Step1GraphBuild.vue'
 import Step2EnvSetup from '../components/Step2EnvSetup.vue'
+import DecisionRiskNavLink from '../components/DecisionRiskNavLink.vue'
 import { generateOntology, getProject, buildGraph, getTaskStatus, getGraphData } from '../api/graph'
 import { getPendingUpload, clearPendingUpload } from '../store/pendingUpload'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'

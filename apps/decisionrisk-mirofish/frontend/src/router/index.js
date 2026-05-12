@@ -54,6 +54,12 @@ const routes = [
     name: 'DecisionRiskCase',
     component: DecisionRiskCaseViewer,
     props: true
+  },
+  {
+    path: '/decisionrisk/:caseId/runs/:executionId',
+    name: 'DecisionRiskRun',
+    component: DecisionRiskCaseViewer,
+    props: true
   }
 ]
 

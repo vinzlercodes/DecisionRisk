@@ -4,8 +4,8 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Current Status
 
-- Status: Foundation MVP slice, runtime mode contract, deterministic Verdict Council pipeline, and issue #10 verdict gates implemented.
-- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, all-mode report substrate, ClaimRef enforcement, CLI validation, backend runtime preflight, deterministic Verdict Council finalization, and documented MiroFish integration boundary.
+- Status: Foundation MVP slice, runtime mode contract, deterministic Verdict Council pipeline, issue #10 verdict gates, and issue #15 case viewer/audit UI implemented.
+- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, all-mode report substrate, ClaimRef enforcement, CLI validation, backend runtime preflight, deterministic Verdict Council finalization, documented MiroFish integration boundary, and read-only case workbench.
 
 ## Completed Work
 
@@ -35,6 +35,10 @@ This file is the live implementation tracker. Every task must update this file b
 - Reused the spec report claim normalizer from the MiroFish artifact facade so live_smoke and replay-shaped runs share ClaimRef shape.
 - Hardened `ReportCritic`, `ClaimRefAuditor`, and `VerdictGateEngine` for issue #10, including malformed report ClaimRefs, overclaim warnings, missing-scenario warnings, and blocking when those claims support the final rationale.
 - Updated validator requirements so every mode requires the three report substrate artifacts and rejects malformed report ClaimRefs.
+- Expanded the DecisionRisk artifact API for issue #15 so flat outputs and run-specific outputs under `outputs/<case_id>/runs/<execution_id>/` share manifest, artifact, risk docket, run listing, audit summary, and raw file read behavior.
+- Added backend audit metadata that uses `run_status.json` when present and falls back to manifest validation for flat replay outputs.
+- Replaced the minimal Vue case viewer with the final read-only workbench tabs: Executive Summary, Option Metrics, Scenario Ensemble, Evidence & ClaimRefs, Council Review, Risk Docket, and Artifact Audit.
+- Added nested `/decisionrisk/:caseId/runs/:executionId` routing, a run selector, non-final run warning behavior, artifact audit table, and DecisionRisk navigation links across the MiroFish headers.
 
 ## Remaining Work
 
@@ -42,8 +46,6 @@ This file is the live implementation tracker. Every task must update this file b
 - Use the created source-of-truth GitHub issues (#5 through #29) as the implementation backlog.
 - Complete production live MiroFish facade behavior for project, graph, simulation, report, and artifact operations beyond the reduced `live_smoke` runner path.
 - Expand the deterministic Verdict Council into live LLM role/model configuration under issue #9.
-- Wire the minimal Vue case viewer into navigation after product shell decisions.
-- Add frontend build verification once MiroFish frontend dependencies are installed.
 - Add full seven-step authoring UI after MVP.
 - Add SQLite artifact indexing after MVP.
 - Add heavier automated safety enforcement after MVP.
@@ -55,7 +57,7 @@ This file is the live implementation tracker. Every task must update this file b
   - Long-running run orchestration with `run_status.json`, `run_events.jsonl`, `run_error.json`, retries, cancellation, idempotency, and resume.
   - Artifact schema versioning, risk pack versions, generator versions, and migration tooling.
   - File-backed LaunchRisk risk pack contract.
-  - Final case viewer tabs, artifact audit UI, navigation integration, and later seven-step authoring UI.
+  - Seven-step authoring UI after the read-only viewer.
   - Evaluation harness covering artifact contract, ClaimRefs, safety, golden replay, council quality, metrics, UI contract, and live smoke.
   - Security/privacy/access-control/export policy, evidence retention, source trust, prompt-injection visibility, and audit trail fields.
   - Observability telemetry, run logs, cost/token estimates, and validation/hash status.
@@ -63,6 +65,11 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Validation
 
+- `PYTHONPATH=packages/decisionrisk-spec/src:apps/decisionrisk-mirofish/backend apps/decisionrisk-mirofish/backend/.venv/bin/python -m unittest tests.test_decisionrisk_backend_runtime.DecisionRiskBackendRouteTests` passed after issue #15: 9 Flask route tests.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #15.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed after issue #15: 49 tests, 9 Flask route tests skipped in the active interpreter because Flask is not installed there.
+- `npm run build` passed in `apps/decisionrisk-mirofish/frontend` after issue #15, with existing Vite warnings about `pendingUpload.js` mixed imports and chunk size.
+- Browser smoke check passed for `/decisionrisk`, `/decisionrisk/ai_memory_launch`, `/decisionrisk/ai_memory_launch/runs/<execution_id>`, and the Artifact Audit tab using a temporary `/private/tmp/decisionrisk-ui-smoke` output root.
 - `gh auth status` failed during issue #10 implementation because the stored token for `vinzlercodes` is invalid; PR creation and remote issue reads remain blocked until re-authentication.
 - Local issue #10 source text in `tasks/github-issues.md` was used as the implementation fallback.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest tests.test_decisionrisk_council` passed after issue #10: 14 tests.
@@ -107,10 +114,8 @@ This file is the live implementation tracker. Every task must update this file b
 - The MiroFish source subtree import created standard subtree merge commits automatically.
 - Full live MiroFish/LLM execution is not yet implemented; replay and eval are implemented in the clean CLI, and backend `live_smoke` has a reduced one-run facade-backed path for configured environments/test doubles.
 - `live_full` intentionally fails unless live LLM preflight passes and then remains blocked until issue #9 implements live Verdict Council role/model configuration; it does not silently fall back to replay.
-- Frontend route code was added but not build-tested because frontend dependencies were not installed in this turn.
-- GitHub authentication is currently invalid for `vinzlercodes`; remote issue reads, pushes, and PR creation are blocked until re-authentication.
 - The source-of-truth issue backlog is now remote, but local working tree updates are not committed.
 
 ## Next Task
 
-- Pick the next MVP blocker issue (#5, #7, #9, #15, #20, #21, or #22) and implement it on a focused branch.
+- Pick the next MVP blocker issue (#5, #7, #9, #20, #21, or #22) and implement it on a focused branch.

@@ -49,6 +49,13 @@
 - [x] Harden `ReportCritic`, `ClaimRefAuditor`, and `VerdictGateEngine` for issue #10.
 - [x] Add validator and council tests for missing report substrate, malformed report ClaimRefs, unsupported rationale, overclaims, and missing scenario support.
 
+## DecisionRisk Viewer
+
+- [x] Build final case viewer tabs for issue #15.
+- [x] Add artifact audit UI and backend validation summary for flat and run-specific outputs.
+- [x] Add nested run route and DecisionRisk navigation links across MiroFish headers.
+- [x] Verify backend tests, compile checks, and frontend build for issue #15.
+
 ## Review
 
 - Validation results: replay generation, replay validation, and 5 unittest tests pass.
@@ -59,3 +66,4 @@
 - Runtime mode contract: implemented issue #6 contract for CLI and backend, including reduced one-run `live_smoke` validation. Validation results: unittest suite passed with Flask route tests skipped when Flask is unavailable, compileall passed, replay generation passed in `/private/tmp`, existing replay output validation passed, and eval/golden comparison passed.
 - Verdict Council pipeline: implemented issue #8 deterministic council service boundary for replay, eval, and live_smoke. Validation results: unittest suite passed with 34 tests and 5 Flask skips, compileall passed, replay generation and validation passed in `/private/tmp`, checked demo outputs were refreshed and validated, and eval/golden comparison passed.
 - Verdict gates: implemented issue #10 all-mode report substrate requirements and stricter ReportCritic/ClaimRefAuditor/VerdictGateEngine behavior. Validation results are tracked in `audit.md`.
+- Case viewer: implemented issue #15 final read-only workbench tabs, nested run routes, artifact audit, validation summary, and DecisionRisk navigation links. Validation results: backend route tests passed in the backend virtualenv, active-interpreter unittest suite passed with Flask skips, compileall passed, frontend build passed, and browser smoke checks covered case list, flat case view, nested run view, and Artifact Audit.
