@@ -21,6 +21,7 @@
       </div>
 
       <div class="header-right">
+        <DecisionRiskNavLink />
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
@@ -70,6 +71,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import GraphPanel from '../components/GraphPanel.vue'
 import Step2EnvSetup from '../components/Step2EnvSetup.vue'
+import DecisionRiskNavLink from '../components/DecisionRiskNavLink.vue'
 import { getProject, getGraphData } from '../api/graph'
 import { getSimulation, stopSimulation, getEnvStatus, closeSimulationEnv } from '../api/simulation'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
@@ -436,4 +438,3 @@ onMounted(async () => {
   border-right: 1px solid #EAEAEA;
 }
 </style>
-

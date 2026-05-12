@@ -273,9 +273,14 @@ GET /api/decisionrisk/runtime-modes
 POST /api/decisionrisk/runs
 GET /api/decisionrisk/cases
 GET /api/decisionrisk/cases/:case_id
+GET /api/decisionrisk/cases/:case_id/runs
+GET /api/decisionrisk/cases/:case_id/runs/:execution_id
 GET /api/decisionrisk/cases/:case_id/artifacts
 GET /api/decisionrisk/cases/:case_id/artifacts/:artifact_name
+GET /api/decisionrisk/cases/:case_id/runs/:execution_id/artifacts
+GET /api/decisionrisk/cases/:case_id/runs/:execution_id/artifacts/:artifact_name
 GET /api/decisionrisk/cases/:case_id/risk-docket
+GET /api/decisionrisk/cases/:case_id/runs/:execution_id/risk-docket
 ```
 
 `POST /api/decisionrisk/runs` accepts:
@@ -316,6 +321,13 @@ DECISIONRISK_OUTPUTS_DIR
 
 if that environment variable is set.
 
+`GET /api/decisionrisk/cases/:case_id` selects the latest run under
+`outputs/:case_id/runs/:execution_id` when run directories exist. If no run
+directory exists, it falls back to the legacy flat replay output at
+`outputs/:case_id/run_manifest.json`. The response includes an `audit` summary
+and per-artifact metadata with manifest path, SHA-256, file existence,
+hash-match status, content type, and raw API URL.
+
 Backend syntax has been checked with:
 
 ```bash
@@ -329,26 +341,32 @@ The current MiroFish frontend includes these DecisionRisk routes:
 ```txt
 /decisionrisk
 /decisionrisk/:caseId
+/decisionrisk/:caseId/runs/:executionId
 ```
 
 Implemented files:
 
 ```txt
 apps/decisionrisk-mirofish/frontend/src/api/decisionrisk.js
+apps/decisionrisk-mirofish/frontend/src/components/DecisionRiskNavLink.vue
 apps/decisionrisk-mirofish/frontend/src/views/decisionrisk/DecisionRiskCaseList.vue
 apps/decisionrisk-mirofish/frontend/src/views/decisionrisk/DecisionRiskCaseViewer.vue
 ```
 
 What the viewer shows:
 
-- Verdict.
-- Option comparison metrics.
-- Grounding level.
-- Scenario run count.
-- Council dissent.
-- Rendered Risk Docket text.
+- Top summary bar with verdict, recommended option, risk pack, run mode, validation status, and grounding level.
+- Executive Summary, Option Metrics, Scenario Ensemble, Evidence & ClaimRefs, Council Review, Risk Docket, and Artifact Audit tabs.
+- Non-final warning for partial, failed, cancelled, or unvalidated runs so intermediate verdict artifacts are not presented as final.
+- Artifact Audit with manifest refs, operation files, paths, SHA-256 hashes, validation result, and raw JSON/Markdown links.
+- DecisionRisk navigation entry across the MiroFish headers.
 
-Known limitation: the frontend route has not been build-tested yet because frontend dependencies were not installed during the foundation implementation.
+Frontend build verification:
+
+```bash
+cd apps/decisionrisk-mirofish/frontend
+npm run build
+```
 
 ## Demo Script
 
@@ -364,7 +382,7 @@ Use this sequence in a live walkthrough:
 8. Open `risk_docket.md` to show the final decision memo.
 9. Run the unit tests.
 10. Run a blocked negative fixture.
-11. Show the MiroFish artifact API and Vue route files as the bridge to the app.
+11. Show the MiroFish artifact API, nested run route, Artifact Audit tab, and Vue route files as the bridge to the app.
 
 ## Current Boundaries
 
@@ -378,12 +396,11 @@ Implemented:
 - Reduced live_smoke MiroFish substrate handoff into the Verdict Council.
 - Safety gates.
 - MiroFish subtree import.
-- MiroFish artifact API skeleton.
-- Vue artifact viewer route skeleton.
+- MiroFish artifact API for flat and run-specific DecisionRisk outputs.
+- Vue case viewer tabs, artifact audit UI, and navigation entry.
 
 Not implemented yet:
 
 - Production live MiroFish project, graph, simulation, and report behavior beyond the reduced smoke path.
 - Live LLM Verdict Council role/model configuration for `live_full`.
-- Frontend build verification.
 - Full seven-step authoring UI.
