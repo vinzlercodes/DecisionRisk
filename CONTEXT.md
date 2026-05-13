@@ -34,6 +34,14 @@ MiroFish report substrate is report-shaped material from live MiroFish execution
 
 Replay report substrate is deterministic fixture material that satisfies the MiroFish report substrate contract for replay and eval modes without live MiroFish execution.
 
+### Evaluation Harness
+
+An Evaluation Harness is the repeatable DecisionRisk regression suite that checks artifact contracts, ClaimRef provenance, safety gates, golden replay stability, council quality, metric drift, UI contracts, and optional live smoke behavior. It is broader than the `eval` runtime mode.
+
+### Evaluation Report
+
+An Evaluation Report is the durable output of an Evaluation Harness run. It records pass, fail, and skip results for each eval check, but it is not a DecisionRisk run artifact and is not indexed by `run_manifest.json`.
+
 ### run_manifest.json
 
 `run_manifest.json` is the root artifact for a DecisionRisk run. It is the canonical index that points to every input and output artifact with paths and SHA-256 hashes.

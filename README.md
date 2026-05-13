@@ -25,6 +25,12 @@ Run an eval-shaped artifact generation and compare it with golden replay outputs
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk run examples/launch_risk/ai_memory_launch/case.yaml --mode eval --output-dir /private/tmp/decisionrisk-eval --golden-dir outputs/ai_memory_launch
 ```
 
+Run the Evaluation Harness and write a reviewable regression report:
+
+```bash
+PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk eval examples/launch_risk/ai_memory_launch/case.yaml --golden-dir outputs/ai_memory_launch --output-dir /private/tmp/decisionrisk-eval --scorecard examples/launch_risk/ai_memory_launch/scorecard.yaml
+```
+
 Run tests:
 
 ```bash
@@ -52,6 +58,8 @@ audit.md                          Live implementation audit
 Every final run includes report substrate artifacts: `mirofish_report.json`, `mirofish_report.md`, and `mirofish_report_claims.json`. Replay and eval generate deterministic Replay report substrate; live modes generate MiroFish report substrate through the backend.
 
 The manifest `mode` must be one of the canonical runtime modes. `live_smoke` and `live_full` require `DECISIONRISK_ENABLE_LIVE=1`; `live_full` also requires live LLM council enablement and an API key. The clean CLI accepts those modes for contract validation but does not execute MiroFish directly; use `POST /api/decisionrisk/runs` in the backend for live runs.
+
+The `decisionrisk eval` command is the broader Evaluation Harness. It writes `evaluation_report.json` and `evaluation_report.md` as harness outputs; these reports are not canonical run artifacts and are not indexed by `run_manifest.json`.
 
 ## Claim Provenance
 
