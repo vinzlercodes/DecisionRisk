@@ -171,6 +171,24 @@ def validate_case(args: argparse.Namespace) -> int:
     return 0
 
 
+def eval_case(args: argparse.Namespace) -> int:
+    from .evaluation import run_evaluation_harness
+
+    if args.update_golden and not args.golden_dir:
+        print("--update-golden requires --golden-dir", file=sys.stderr)
+        return 2
+
+    report = run_evaluation_harness(
+        case_path=Path(args.case_yaml),
+        output_dir=Path(args.output_dir),
+        golden_dir=Path(args.golden_dir) if args.golden_dir else None,
+        scorecard_path=Path(args.scorecard) if args.scorecard else None,
+        update_golden=args.update_golden,
+    )
+    print(Path(report.output_dir) / "evaluation_report.json")
+    return 1 if report.overall_status == "fail" else 0
+
+
 def validate_output_dir(output_dir: Path, expected_mode: str | None = None) -> list[str]:
     errors: list[str] = []
     manifest_path = output_dir / "run_manifest.json"
@@ -326,6 +344,14 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("--scorecard")
     validate_parser.add_argument("--output-dir")
     validate_parser.set_defaults(func=validate_case)
+
+    eval_parser = subparsers.add_parser("eval")
+    eval_parser.add_argument("case_yaml")
+    eval_parser.add_argument("--golden-dir")
+    eval_parser.add_argument("--output-dir", required=True)
+    eval_parser.add_argument("--scorecard")
+    eval_parser.add_argument("--update-golden", action="store_true")
+    eval_parser.set_defaults(func=eval_case)
 
     return parser
 
