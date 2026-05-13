@@ -218,7 +218,44 @@ The tests cover:
 - Blocked negative fixtures.
 - Prompt-injection warning behavior.
 
-## 8. Demo Safety Gates
+## 8. Run the Evaluation Harness
+
+Run the full replay-safe harness:
+
+```bash
+PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk eval examples/launch_risk/ai_memory_launch/case.yaml --golden-dir outputs/ai_memory_launch --output-dir /private/tmp/decisionrisk-eval --scorecard examples/launch_risk/ai_memory_launch/scorecard.yaml
+```
+
+Expected output:
+
+```txt
+/private/tmp/decisionrisk-eval/evaluation_report.json
+```
+
+The harness writes:
+
+```txt
+/private/tmp/decisionrisk-eval/evaluation_report.json
+/private/tmp/decisionrisk-eval/evaluation_report.md
+```
+
+What to point out:
+
+- The Evaluation Harness is broader than runtime mode `eval`.
+- `evaluation_report.json` and `evaluation_report.md` are harness outputs, not canonical run artifacts indexed by `run_manifest.json`.
+- Artifact contract, ClaimRef, safety, golden replay, council quality, metric regression, and UI contract evals should pass for the deterministic fixture.
+- Live smoke is marked skipped unless `DECISIONRISK_ENABLE_LIVE=1` is configured.
+- Normal harness runs fail when golden artifacts drift.
+
+Refresh golden replay artifacts only when the drift is intentional:
+
+```bash
+PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk eval examples/launch_risk/ai_memory_launch/case.yaml --golden-dir outputs/ai_memory_launch --output-dir /private/tmp/decisionrisk-eval --scorecard examples/launch_risk/ai_memory_launch/scorecard.yaml --update-golden
+```
+
+The update path rewrites replay-mode golden artifacts in `outputs/ai_memory_launch`; review the diff before committing.
+
+## 9. Demo Safety Gates
 
 These fixtures should be blocked:
 
@@ -258,7 +295,7 @@ What to point out:
 - Prompt-injection-like evidence is not executed as instruction.
 - It is treated as untrusted quoted evidence and surfaced as a warning.
 
-## 9. Demo the MiroFish Artifact API
+## 10. Demo the MiroFish Artifact API
 
 The DecisionRisk API is registered inside the MiroFish Flask app under:
 
@@ -334,7 +371,7 @@ Backend syntax has been checked with:
 PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk
 ```
 
-## 10. Demo the Vue Route Shape
+## 11. Demo the Vue Route Shape
 
 The current MiroFish frontend includes these DecisionRisk routes:
 
@@ -381,8 +418,9 @@ Use this sequence in a live walkthrough:
 7. Open `simulation_metrics.json` to compare options.
 8. Open `risk_docket.md` to show the final decision memo.
 9. Run the unit tests.
-10. Run a blocked negative fixture.
-11. Show the MiroFish artifact API, nested run route, Artifact Audit tab, and Vue route files as the bridge to the app.
+10. Run the Evaluation Harness and open `evaluation_report.md`.
+11. Run a blocked negative fixture.
+12. Show the MiroFish artifact API, nested run route, Artifact Audit tab, and Vue route files as the bridge to the app.
 
 ## Current Boundaries
 
@@ -394,6 +432,7 @@ Implemented:
 - Replay report substrate fixtures for all-mode report gating.
 - Deterministic Verdict Council pipeline.
 - Reduced live_smoke MiroFish substrate handoff into the Verdict Council.
+- Evaluation Harness with durable reports, golden replay checks, metric regression bands, UI static contract checks, and live-smoke skip behavior.
 - Safety gates.
 - MiroFish subtree import.
 - MiroFish artifact API for flat and run-specific DecisionRisk outputs.
@@ -403,4 +442,5 @@ Not implemented yet:
 
 - Production live MiroFish project, graph, simulation, and report behavior beyond the reduced smoke path.
 - Live LLM Verdict Council role/model configuration for `live_full`.
+- Browser-driven UI eval and CI live-smoke jobs; issue #20 currently keeps UI eval dependency-light and skips live smoke without explicit live configuration.
 - Full seven-step authoring UI.

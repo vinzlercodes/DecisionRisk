@@ -4,8 +4,8 @@ This file is the live implementation tracker. Every task must update this file b
 
 ## Current Status
 
-- Status: Foundation MVP slice, runtime mode contract, deterministic Verdict Council pipeline, issue #10 verdict gates, and issue #15 case viewer/audit UI implemented.
-- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, all-mode report substrate, ClaimRef enforcement, CLI validation, backend runtime preflight, deterministic Verdict Council finalization, documented MiroFish integration boundary, and read-only case workbench.
+- Status: Foundation MVP slice, runtime mode contract, deterministic Verdict Council pipeline, issue #10 verdict gates, issue #15 case viewer/audit UI, and issue #20 Evaluation Harness implemented.
+- MVP target: replayable LaunchRisk `ai_memory_launch` fixture with canonical `run_manifest.json`, all-mode report substrate, ClaimRef enforcement, CLI validation, backend runtime preflight, deterministic Verdict Council finalization, documented MiroFish integration boundary, read-only case workbench, and repeatable evaluation/regression reporting.
 
 ## Completed Work
 
@@ -39,6 +39,12 @@ This file is the live implementation tracker. Every task must update this file b
 - Added backend audit metadata that uses `run_status.json` when present and falls back to manifest validation for flat replay outputs.
 - Replaced the minimal Vue case viewer with the final read-only workbench tabs: Executive Summary, Option Metrics, Scenario Ensemble, Evidence & ClaimRefs, Council Review, Risk Docket, and Artifact Audit.
 - Added nested `/decisionrisk/:caseId/runs/:executionId` routing, a run selector, non-final run warning behavior, artifact audit table, and DecisionRisk navigation links across the MiroFish headers.
+- Added the issue #20 Evaluation Harness as `decisionrisk eval`, with artifact contract, ClaimRef, safety, golden replay, council quality, metric regression, UI contract, and live-smoke eval checks.
+- Added durable `evaluation_report.json` and `evaluation_report.md` harness outputs; these are deliberately not DecisionRisk run artifacts and are not indexed by `run_manifest.json`.
+- Added explicit `--update-golden` support that refreshes replay-mode golden artifacts only when requested.
+- Added LaunchRisk metric regression bands and option ranking expectations to the `ai_memory_launch` scorecard.
+- Added Evaluation Harness and Evaluation Report to `CONTEXT.md` so runtime mode `eval` is not confused with the broader regression suite.
+- Updated README, demo guide, and task tracking for issue #20 behavior, caveats, validation commands, and golden update workflow.
 
 ## Remaining Work
 
@@ -51,6 +57,8 @@ This file is the live implementation tracker. Every task must update this file b
 - Add heavier automated safety enforcement after MVP.
 - Add additional risk packs after MVP.
 - Add live CI smoke workflow after MVP.
+- Add browser-driven UI evaluation after frontend test tooling is introduced.
+- Add CI orchestration for `decisionrisk eval` under issue #21.
 - Keep `demo/README.md` updated as live MiroFish capabilities are implemented.
 - Keep `llm-council` as a reusable general skill only; DecisionRisk's Verdict Council must be product code, not an optional skill-triggered workflow.
 - Implement the expanded source-of-truth requirements captured as GitHub issue drafts:
@@ -58,13 +66,17 @@ This file is the live implementation tracker. Every task must update this file b
   - Artifact schema versioning, risk pack versions, generator versions, and migration tooling.
   - File-backed LaunchRisk risk pack contract.
   - Seven-step authoring UI after the read-only viewer.
-  - Evaluation harness covering artifact contract, ClaimRefs, safety, golden replay, council quality, metrics, UI contract, and live smoke.
   - Security/privacy/access-control/export policy, evidence retention, source trust, prompt-injection visibility, and audit trail fields.
   - Observability telemetry, run logs, cost/token estimates, and validation/hash status.
   - Human review, post-decision monitoring, retrospective artifacts, SQLite metadata index, deployment docs, CI/release discipline, and future risk packs.
 
 ## Validation
 
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest tests.test_decisionrisk_evaluation` passed after issue #20: 8 tests.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed after issue #20: 57 tests, 9 Flask route tests skipped because Flask is not installed in the active interpreter.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m decisionrisk eval examples/launch_risk/ai_memory_launch/case.yaml --golden-dir outputs/ai_memory_launch --output-dir /private/tmp/decisionrisk-eval --scorecard examples/launch_risk/ai_memory_launch/scorecard.yaml` passed after issue #20 and wrote `/private/tmp/decisionrisk-eval/evaluation_report.json`.
+- The issue #20 evaluation report passed artifact contract, ClaimRef, safety, golden replay, council quality, metric regression, and UI contract checks; live smoke was explicitly skipped because `DECISIONRISK_ENABLE_LIVE=1` was not set.
+- `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #20.
 - `PYTHONPATH=packages/decisionrisk-spec/src:apps/decisionrisk-mirofish/backend apps/decisionrisk-mirofish/backend/.venv/bin/python -m unittest tests.test_decisionrisk_backend_runtime.DecisionRiskBackendRouteTests` passed after issue #15: 9 Flask route tests.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m compileall packages/decisionrisk-spec/src/decisionrisk apps/decisionrisk-mirofish/backend/app/decisionrisk` passed after issue #15.
 - `PYTHONPATH=packages/decisionrisk-spec/src python3 -m unittest discover -s tests` passed after issue #15: 49 tests, 9 Flask route tests skipped in the active interpreter because Flask is not installed there.
@@ -114,8 +126,11 @@ This file is the live implementation tracker. Every task must update this file b
 - The MiroFish source subtree import created standard subtree merge commits automatically.
 - Full live MiroFish/LLM execution is not yet implemented; replay and eval are implemented in the clean CLI, and backend `live_smoke` has a reduced one-run facade-backed path for configured environments/test doubles.
 - `live_full` intentionally fails unless live LLM preflight passes and then remains blocked until issue #9 implements live Verdict Council role/model configuration; it does not silently fall back to replay.
+- Issue #20 UI contract eval is intentionally dependency-light: it checks static viewer contract shape, not a browser-rendered frontend.
+- Issue #20 live-smoke eval is skipped unless live MiroFish configuration is explicitly enabled; local replay-safe evaluation remains keyless.
+- Evaluation reports are harness outputs rather than canonical run artifacts, so consumers should load `evaluation_report.json` directly instead of looking for it in `run_manifest.json`.
 - The source-of-truth issue backlog is now remote, but local working tree updates are not committed.
 
 ## Next Task
 
-- Pick the next MVP blocker issue (#5, #7, #9, #20, #21, or #22) and implement it on a focused branch.
+- Pick the next MVP blocker issue (#5, #7, #9, #21, or #22) and implement it on a focused branch.
